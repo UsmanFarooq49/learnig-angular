@@ -1,0 +1,84 @@
+<div class="flex flex-col lg:flex-row gap-6">
+    <!-- File list -->
+    <div class="flex-1 overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="text-gray-500 border-b border-gray-100">
+                    <th class="py-2.5 px-3 text-left font-medium">File Name</th>
+                    <th class="py-2.5 px-3 text-left font-medium">Uploaded On</th>
+                    <th class="py-2.5 px-3 text-left font-medium">Size</th>
+                    <th class="py-2.5 px-3 text-left font-medium">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (att of attachments(); track att.key) {
+                    <tr class="border-b border-gray-50">
+                        <td class="py-3 px-3">
+                            <div class="flex items-center gap-2">
+                                <i class="pi" [ngClass]="iconFor(att.originalFileName) + ' ' + colorFor(att.originalFileName)"></i>
+                                @if (att.previewUrl) {
+                                    <a [href]="att.previewUrl" target="_blank" class="text-blue-600 hover:text-blue-800 hover:underline font-medium cursor-pointer">
+                                        {{ att.originalFileName }}
+                                    </a>
+                                } @else {
+                                    <span class="text-gray-700">{{ att.originalFileName }}</span>
+                                }
+                                @if (att.kind === 'pending') {
+                                    <span class="ml-1 text-[10px] uppercase tracking-wide text-amber-600 bg-amber-50 rounded-full px-1.5 py-0.5">new</span>
+                                }
+                            </div>
+                        </td>
+                        <td class="py-3 px-3 text-gray-500">{{ att.uploadedAt | date: 'dd-MMM-yyyy hh:mm a' }}</td>
+                        <td class="py-3 px-3 text-gray-500">{{ att.fileSizeDisplay }}</td>
+                        <td class="py-3 px-3">
+                            <div class="flex items-center gap-3">
+                                @if (att.previewUrl) {
+                                    <button type="button" (click)="preview(att)" class="text-gray-400 hover:text-blue-500 transition-colors cursor-pointer" title="Preview">
+                                        <i class="pi pi-eye text-sm"></i>
+                                    </button>
+                                }
+                                <button
+                                    type="button"
+                                    (click)="download(att)"
+                                    [disabled]="downloading().has(att.key)"
+                                    class="text-gray-400 hover:text-[var(--primary-color)] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-wait"
+                                    title="Download"
+                                >
+                                    <i class="pi text-sm" [ngClass]="downloading().has(att.key) ? 'pi-spin pi-spinner' : 'pi-download'"></i>
+                                </button>
+                                <button
+                                    type="button"
+                                    (click)="remove(att)"
+                                    [disabled]="deleting().has(att.key)"
+                                    class="text-gray-400 hover:text-red-500 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-wait"
+                                    title="Delete"
+                                >
+                                    <i class="pi text-sm" [ngClass]="deleting().has(att.key) ? 'pi-spin pi-spinner' : 'pi-trash'"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                } @empty {
+                    <tr>
+                        <td colspan="4" class="py-8 text-center text-gray-400">No attachments yet.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Drop zone -->
+    <div class="w-full lg:w-80 lg:shrink-0">
+        <app-file-upload
+            accept=".pdf,.jpg,.jpeg,.png"
+            hint="Supports: PDF, JPG, PNG (Max 10MB)"
+            (filesAdded)="onFilesAdded($event)"
+        />
+        @if (uploading > 0) {
+            <p class="mt-3 flex items-center gap-2 text-xs text-gray-500">
+                <i class="pi pi-spin pi-spinner"></i>
+                Uploading {{ uploading }} file{{ uploading === 1 ? '' : 's' }}…
+            </p>
+        }
+    </div>
+</div>

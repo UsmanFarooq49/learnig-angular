@@ -1,0 +1,61 @@
+<p-dialog
+    [visible]="visible()"
+    [modal]="true"
+    [closable]="false"
+    [draggable]="false"
+    [resizable]="false"
+    [dismissableMask]="false"
+    [closeOnEscape]="false"
+    [showHeader]="false"
+    [style]="{ width: '32rem', maxWidth: '92vw' }"
+    styleClass="financial-year-modal"
+>
+    <div class="flex items-center gap-2 px-5 py-3 border-b border-gray-200">
+        <span class="w-1.5 h-5 rounded-sm bg-[var(--primary-color)]"></span>
+        <h5 style="margin: 0">Select Financial Year</h5>
+    </div>
+
+    <div class="p-5 flex flex-col gap-4">
+        <p class="text-sm text-gray-500">
+            Choose the financial year you want to work in.
+        </p>
+
+        @if (loading()) {
+            <div class="flex items-center justify-center py-6 text-sm text-gray-500">
+                <i class="pi pi-spin pi-spinner mr-2"></i> Loading financial years…
+            </div>
+        } @else {
+            <p-floatlabel variant="on">
+                <p-select
+                    inputId="financialYear"
+                    [options]="financialYears()"
+                    optionLabel="financialYearName"
+                    optionValue="id"
+                    [ngModel]="selectedYearId()"
+                    (ngModelChange)="selectedYearId.set($event)"
+                    appendTo="body"
+                    styleClass="w-full"
+                />
+                <label for="financialYear">Financial Year</label>
+            </p-floatlabel>
+
+            @if (financialYears().length === 0) {
+                <p class="text-sm text-red-500">
+                    No financial years available. Please contact your administrator.
+                </p>
+            }
+        }
+    </div>
+
+    <div class="flex items-center justify-end gap-2 px-5 py-3 border-t border-gray-200">
+        <button
+            type="button"
+            (click)="confirm()"
+            [disabled]="loading() || selectedYearId() == null"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--primary-color)] text-sm font-medium text-white hover:bg-[var(--primary-hover)] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+            <i class="pi pi-check text-xs"></i>
+            Continue
+        </button>
+    </div>
+</p-dialog>

@@ -1,0 +1,14 @@
+:host {
+    display: block;
+}
+
+/* Tighten the body text — PrimeNG's `p-datatable-sm` still uses ~14px;
+ * we want the listing to feel more like a dense data grid. */
+:host ::ng-deep .p-datatable {
+    font-size: 0.8125rem; /* 13px */
+}
+
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th,
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.5rem 0.75rem;
+}

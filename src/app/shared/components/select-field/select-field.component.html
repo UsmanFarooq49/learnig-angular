@@ -1,0 +1,40 @@
+<div class="select-field" [class.has-error]="hasError" [class]="widthClass">
+
+    <p-floatlabel [variant]="floatVariant">
+        <p-select
+            [inputId]="fieldId"
+            [options]="options"
+            [optionLabel]="optionLabel"
+            [optionValue]="optionValue"
+            [ngModel]="value()"
+            (ngModelChange)="onValueChange($event)"
+            (onBlur)="onBlur()"
+            [disabled]="disabled"
+            [filter]="filter"
+            [showClear]="showClear"
+            [placeholder]="placeholder"
+            [invalid]="hasError"
+            appendTo="body"
+            styleClass="w-full"
+        />
+        <label [for]="fieldId">
+            {{ label }}
+            @if (required) { <span class="select-field__required" aria-hidden="true">*</span> }
+        </label>
+    </p-floatlabel>
+
+    <!-- Helper / Error text — only rendered when there is content to show -->
+    @if (hasError || hint) {
+        <div class="select-field__footer">
+            @if (hasError) {
+                <small class="select-field__error" role="alert">
+                    <i class="pi pi-exclamation-circle" style="font-size: 0.875rem;"></i>
+                    <span>{{ firstErrorMessage }}</span>
+                </small>
+            } @else {
+                <small class="select-field__hint">{{ hint }}</small>
+            }
+        </div>
+    }
+
+</div>

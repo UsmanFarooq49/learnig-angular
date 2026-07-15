@@ -1,0 +1,92 @@
+<div class="bg-white rounded-xl border border-gray-200">
+    <div class="flex items-center justify-between flex-wrap gap-3 px-4 py-3 border-b border-gray-100">
+        <div class="flex items-center gap-3">
+            <h5 class="text-sm font-semibold text-gray-800" style="margin: 0">Account Hierarchy &amp; Transactions</h5>
+            <span class="text-[11px] font-medium text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">{{ entryCount() }} entries</span>
+            <div class="flex items-center gap-2">
+                <button
+                    type="button"
+                    (click)="viewModeChange.emit('one')"
+                    class="px-3 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer border"
+                    [ngClass]="viewMode() === 'one' ? 'bg-white border-gray-200 text-gray-800 shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                >One Account</button>
+                <button
+                    type="button"
+                    (click)="viewModeChange.emit('subsidiary')"
+                    class="px-3 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer border"
+                    [ngClass]="viewMode() === 'subsidiary' ? 'bg-white border-gray-200 text-gray-800 shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                >Subsidiary Account</button>
+            </div>
+        </div>
+
+        <div class="relative">
+            <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+            <input
+                type="text"
+                [ngModel]="searchTerm()"
+                (ngModelChange)="searchTermChange.emit($event)"
+                placeholder="Search transactions..."
+                class="w-56 pl-9 pr-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-sm text-gray-700 placeholder-gray-400 outline-none focus:bg-white focus:border-gray-200 transition-colors"
+            />
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="text-gray-400 text-[11px] uppercase tracking-wide border-b border-gray-100 bg-gray-50/60">
+                    <th class="py-2.5 px-3 text-left font-medium min-w-[260px]">Voucher / Account</th>
+                    <th class="py-2.5 px-3 text-left font-medium">Date</th>
+                    <th class="py-2.5 px-3 text-left font-medium">Reference</th>
+                    <th class="py-2.5 px-3 text-left font-medium min-w-[260px]">Description</th>
+                    <th class="py-2.5 px-3 text-right font-medium">Debit</th>
+                    <th class="py-2.5 px-3 text-right font-medium">Credit</th>
+                    <th class="py-2.5 px-3 text-right font-medium">Balance</th>
+                    <th class="py-2.5 px-3 text-center font-medium">Attach</th>
+                    <th class="py-2.5 px-3 text-left font-medium">Branch</th>
+                    <th class="py-2.5 px-3 text-left font-medium">User</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (row of rows(); track row.id) {
+                    @if (row.kind === 'transaction') {
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/60">
+                            <td class="py-2.5 px-3">
+                                <span class="font-medium text-[var(--primary-color)]" [style.padding-left.px]="row.level * 20">{{ row.voucherNo }}</span>
+                            </td>
+                            <td class="py-2.5 px-3 text-gray-500 whitespace-nowrap">{{ row.date | date: 'yyyy-MM-dd' }}</td>
+                            <td class="py-2.5 px-3 text-[var(--primary-color)]">{{ row.reference || '—' }}</td>
+                            <td class="py-2.5 px-3 text-gray-600">{{ row.description || '—' }}</td>
+                            <td class="py-2.5 px-3 text-right text-gray-700">{{ row.debit ? (row.debit | number: '1.2-2') : '' }}</td>
+                            <td class="py-2.5 px-3 text-right text-gray-700">{{ row.credit ? (row.credit | number: '1.2-2') : '' }}</td>
+                            <td class="py-2.5 px-3 text-right text-gray-700">{{ row.balance != null ? (row.balance | number: '1.2-2') : '' }}</td>
+                            <td class="py-2.5 px-3 text-center">
+                                @if (row.hasAttachment) { <i class="pi pi-paperclip text-gray-300 text-xs"></i> } @else { <span class="text-gray-200">—</span> }
+                            </td>
+                            <td class="py-2.5 px-3 text-gray-500 whitespace-nowrap">{{ row.branch || '—' }}</td>
+                            <td class="py-2.5 px-3 text-gray-500 whitespace-nowrap">{{ row.user || '—' }}</td>
+                        </tr>
+                    } @else {
+                        <tr class="border-b border-gray-100" [ngClass]="row.kind === 'account' ? 'bg-white' : 'bg-gray-50/40'">
+                            <td class="py-2.5 px-3">
+                                <button type="button" (click)="toggleNode.emit(row)" class="flex items-center gap-2 cursor-pointer" [style.padding-left.px]="row.level * 20">
+                                    <i class="pi text-[10px] text-gray-400 w-3" [ngClass]="row.expanded ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
+                                    <span [ngClass]="row.kind === 'group' ? 'font-bold text-gray-800' : 'font-semibold text-gray-700'">
+                                        {{ row.code }} — {{ row.name }}
+                                    </span>
+                                </button>
+                            </td>
+                            <td colspan="3"></td>
+                            <td class="py-2.5 px-3 text-right font-semibold text-gray-700">{{ row.debit ? (row.debit | number: '1.2-2') : '' }}</td>
+                            <td class="py-2.5 px-3 text-right font-semibold text-gray-700">{{ row.credit ? (row.credit | number: '1.2-2') : '' }}</td>
+                            <td class="py-2.5 px-3 text-right font-bold text-gray-800">{{ row.balance != null ? (row.balance | number: '1.2-2') : '' }}</td>
+                            <td colspan="3"></td>
+                        </tr>
+                    }
+                } @empty {
+                    <tr><td colspan="10" class="py-12 text-center text-gray-400">No data for the selected filters.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

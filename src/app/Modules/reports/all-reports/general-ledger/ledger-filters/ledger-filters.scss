@@ -1,0 +1,44 @@
+:host {
+    display: block;
+}
+
+.gl-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.gl-label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #9ca3af;
+    font-weight: 500;
+    margin-bottom: 0.35rem;
+}
+
+.gl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #374151;
+    background: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+        background: #f9fafb;
+        border-color: #d1d5db;
+    }
+}
+
+@media print {
+    :host {
+        display: none !important;
+    }
+}

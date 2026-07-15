@@ -1,0 +1,179 @@
+// Icon-only "rail" presentation: hide labels/sub-menus and centre the icons.
+// Shared by the desktop collapsed state and the tablet/mobile resting state.
+@mixin sidebar-icon-rail {
+    .sidebar-brand-text,
+    .sidebar-subtitle,
+    .sidebar-collapse-btn,
+    .sidebar-setting-label,
+    .layout-menuitem-root-text,
+    .layout-menuitem-text,
+    .layout-submenu-toggler {
+        display: none;
+    }
+
+    // Rail shows only top-level (module) icons — hide every nested submenu
+    // (sub-modules + screens) so they don't appear in the module rail.
+    .layout-menu ul {
+        display: none;
+    }
+
+    .layout-menu a {
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+
+        .layout-menuitem-icon {
+            margin-right: 0;
+        }
+    }
+
+    .sidebar-brand {
+        justify-content: center;
+    }
+
+    .sidebar-setting-btn {
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+@media screen and (min-width: 1960px) {
+
+    .layout-main,
+    .landing-wrapper {
+        width: 1504px;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .layout-wrapper {
+        &.layout-overlay {
+            .layout-main-container {
+                margin-left: 0;
+            }
+
+            .layout-sidebar {
+                transform: translateX(-100%);
+                left: 0;
+                top: 0;
+                height: 100vh;
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+                border-right: 1px solid var(--surface-border);
+                transition:
+                    transform 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99),
+                    left 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99);
+                box-shadow:
+                    0px 3px 5px rgba(0, 0, 0, 0.02),
+                    0px 0px 2px rgba(0, 0, 0, 0.05),
+                    0px 1px 4px rgba(0, 0, 0, 0.08);
+            }
+
+            &.layout-overlay-active {
+                .layout-sidebar {
+                    transform: translateX(0);
+                }
+            }
+        }
+
+        &.layout-static {
+            .layout-main-container {
+                margin-left: 20rem;
+            }
+
+            // Collapsed: a slim icon-only rail that expands on hover to reveal labels/options.
+            &.layout-static-inactive {
+                .layout-main-container {
+                    margin-left: 5rem;
+                }
+
+                .layout-sidebar {
+                    width: 5rem;
+                    padding-left: 0.75rem;
+                    padding-right: 0.75rem;
+
+                    // Hover temporarily expands the rail, overlaying the content.
+                    &:hover {
+                        width: 20rem;
+                        padding-left: 1.5rem;
+                        padding-right: 1.5rem;
+                        box-shadow:
+                            0px 3px 5px rgba(0, 0, 0, 0.04),
+                            0px 0px 2px rgba(0, 0, 0, 0.06),
+                            0px 1px 4px rgba(0, 0, 0, 0.1);
+                    }
+
+                    // Icon-only presentation while the rail is at rest (not hovered).
+                    &:not(:hover) {
+                        @include sidebar-icon-rail;
+                    }
+                }
+            }
+        }
+
+        .layout-mask {
+            display: none;
+        }
+    }
+}
+
+@media (max-width: 991px) {
+    .blocked-scroll {
+        overflow: hidden;
+    }
+
+    .layout-wrapper {
+        // Leave room for the persistent icon rail.
+        .layout-main-container {
+            margin-left: 5rem;
+        }
+
+        // Full-height rail starting from the very top; the topbar is offset to its right.
+        .layout-sidebar {
+            transform: translateX(0);
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 5rem;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        // Icon-only while the menu is closed; tapping the hamburger expands it.
+        &:not(.layout-mobile-active) .layout-sidebar {
+            @include sidebar-icon-rail;
+        }
+
+        .layout-mask {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 998;
+            width: 100%;
+            height: 100%;
+            background-color: var(--maskbg);
+        }
+
+        &.layout-mobile-active {
+            .layout-sidebar {
+                width: 20rem;
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+                box-shadow:
+                    0px 3px 5px rgba(0, 0, 0, 0.04),
+                    0px 0px 2px rgba(0, 0, 0, 0.06),
+                    0px 1px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .layout-mask {
+                display: block;
+            }
+        }
+    }
+}

@@ -1,0 +1,138 @@
+/* You can add global styles to this file, and also import other style files */
+@use 'primeicons/primeicons.css';
+@use './layout/layout.scss';
+@use './demo/demo.scss';
+
+body,
+input,
+button,
+select,
+textarea {
+    font-family: 'Montserrat' !important;
+}
+
+/* Keep PrimeNG Select on a single row: selected label fills the space and the
+   dropdown chevron stays inline (instead of the label truncating / icon wrapping). */
+.p-select {
+    display: inline-flex !important;
+    align-items: center;
+}
+
+.p-select .p-select-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.p-select .p-select-dropdown {
+    flex: 0 0 auto;
+}
+
+/* Keep PrimeNG DatePicker on a single row: the input fills the space and the
+   calendar button stays inline (instead of wrapping to a new line). */
+.p-datepicker {
+    display: inline-flex !important;
+    align-items: stretch;
+}
+
+.p-datepicker .p-datepicker-input {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.p-datepicker .p-datepicker-dropdown {
+    flex: 0 0 auto;
+}
+
+/* ── Single source of truth for input typography ──────────────────────────────
+   Every PrimeNG field type — text, number, date, select, multiselect, textarea —
+   plus their floating labels, share one font-family and one font-size. If you
+   need to tweak the look, change the two variables here and the whole app
+   moves together. Nothing should override these per-component. */
+.p-inputtext,
+.p-inputnumber .p-inputtext,
+.p-datepicker .p-datepicker-input,
+.p-select .p-select-label,
+.p-select .p-select-label.p-placeholder,
+.p-multiselect .p-multiselect-label,
+.p-multiselect .p-multiselect-label.p-placeholder,
+.p-textarea,
+p-floatlabel label {
+    font-family: 'Montserrat' !important;
+    font-size: 0.875rem !important; /* 14px — !important beats PrimeNG's theme cascade */
+    font-weight: 400 !important;     /* normalize weight so no field can look "heavier" */
+}
+
+/* ── Print rules ──────────────────────────────────────────────────────────────
+   When any page is printed, drop the layout chrome (sidebar, topbar, loader,
+   toasts, dialogs) so only the page's own content reaches paper. Per-page
+   printable layouts (e.g. payment-voucher-print) bring their own paper styles. */
+@media print {
+    app-topbar,
+    app-sidebar,
+    app-loader,
+    app-financial-year-modal,
+    .layout-mask,
+    .p-toast,
+    .p-confirmdialog,
+    .p-dialog-mask {
+        display: none !important;
+    }
+
+    .layout-wrapper,
+    .layout-main-container,
+    .layout-main {
+        padding: 0 !important;
+        margin: 0 !important;
+        background: white !important;
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Dark mode retrofit.
+   The custom UI is built with hardcoded light Tailwind utilities
+   (bg-white / text-gray-* / border-gray-* / bg-gray-*). Under `.app-dark`
+   we remap those to the theme's surface/text variables so the whole app
+   adapts to dark mode (PrimeNG components already adapt on their own).
+   ────────────────────────────────────────────────────────────────────────── */
+html.app-dark {
+    .bg-white {
+        background-color: var(--surface-card) !important;
+    }
+
+    .bg-gray-50,
+    .bg-gray-100 {
+        background-color: var(--surface-hover) !important;
+    }
+
+    .hover\:bg-gray-50:hover,
+    .hover\:bg-gray-100:hover {
+        background-color: var(--surface-hover) !important;
+    }
+
+    .text-gray-900,
+    .text-gray-800,
+    .text-gray-700 {
+        color: var(--text-color) !important;
+    }
+
+    .text-gray-600,
+    .text-gray-500,
+    .text-gray-400,
+    .text-gray-300 {
+        color: var(--text-color-secondary) !important;
+    }
+
+    .border-gray-50,
+    .border-gray-100,
+    .border-gray-200,
+    .border-gray-300 {
+        border-color: var(--surface-border) !important;
+    }
+
+    .placeholder-gray-400::placeholder {
+        color: var(--text-color-secondary) !important;
+    }
+}

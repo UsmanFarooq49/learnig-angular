@@ -1,0 +1,29 @@
+<div
+    class="border-2 border-dashed rounded-xl px-6 py-8 flex flex-col items-center justify-center text-center cursor-pointer transition-colors"
+    [ngClass]="isDragOver()
+        ? 'border-[var(--primary-color)] bg-blue-50/40'
+        : 'border-gray-200 bg-gray-50/40 hover:bg-gray-50'"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+    (click)="openPicker()"
+>
+    <div class="w-11 h-11 rounded-full bg-white border border-gray-200 flex items-center justify-center mb-3 shadow-sm">
+        <i class="pi pi-cloud-upload text-gray-400"></i>
+    </div>
+    <p class="text-sm text-gray-600">
+        Drag &amp; drop files here or
+        <span class="text-[var(--primary-color)] font-semibold">click to browse</span>
+    </p>
+    @if (hint) {
+        <p class="text-xs text-gray-400 mt-1">{{ hint }}</p>
+    }
+    <input
+        #fileInput
+        type="file"
+        [accept]="accept"
+        [multiple]="multiple"
+        (change)="onFileInput($event)"
+        class="hidden"
+    />
+</div>

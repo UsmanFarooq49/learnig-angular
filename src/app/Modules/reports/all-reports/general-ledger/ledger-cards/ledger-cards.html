@@ -1,0 +1,30 @@
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div class="bg-white rounded-xl border border-gray-200 p-4">
+        <div class="flex items-start justify-between">
+            <p class="text-xs text-gray-400 uppercase tracking-wide">Total Debit</p>
+            <span class="w-7 h-7 rounded-lg bg-blue-50 text-[var(--primary-color)] flex items-center justify-center"><i class="pi pi-arrow-up-right text-xs"></i></span>
+        </div>
+        <p class="text-2xl font-bold text-gray-800 mt-2">{{ totalDebit() | number: '1.2-2' }}</p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4">
+        <div class="flex items-start justify-between">
+            <p class="text-xs text-gray-400 uppercase tracking-wide">Total Credit</p>
+            <span class="w-7 h-7 rounded-lg bg-amber-50 text-amber-500 flex items-center justify-center"><i class="pi pi-arrow-down-left text-xs"></i></span>
+        </div>
+        <p class="text-2xl font-bold text-gray-800 mt-2">{{ totalCredit() | number: '1.2-2' }}</p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4">
+        <div class="flex items-start justify-between">
+            <p class="text-xs text-gray-400 uppercase tracking-wide">Net Movement</p>
+            <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-500 flex items-center justify-center"><i class="pi pi-sort-alt text-xs"></i></span>
+        </div>
+        <p class="text-2xl font-bold mt-2" [ngClass]="netMovement() < 0 ? 'text-red-500' : 'text-emerald-600'">{{ netMovement() >= 0 ? '+' : '' }}{{ netMovement() | number: '1.2-2' }}</p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4">
+        <div class="flex items-start justify-between">
+            <p class="text-xs text-gray-400 uppercase tracking-wide">Total Transactions</p>
+            <span class="w-7 h-7 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center"><i class="pi pi-file text-xs"></i></span>
+        </div>
+        <p class="text-2xl font-bold text-gray-800 mt-2">{{ entryCount() }}</p>
+    </div>
+</div>

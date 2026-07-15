@@ -1,0 +1,55 @@
+<app-data-table
+    title="Voucher Details"
+    [columns]="voucherColumns"
+    [data]="voucherRows"
+>
+    <button
+        tableActions
+        type="button"
+        (click)="onAddRow()"
+        class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--primary-color)] text-sm font-medium text-white hover:bg-[var(--primary-hover)] transition-colors cursor-pointer"
+    >
+        <i class="pi pi-plus text-xs"></i>
+        Add Row
+    </button>
+
+    <!-- Per-row actions: Edit / Duplicate / Delete -->
+    <ng-template tableRowActions let-row let-index="index">
+        <div class="flex items-center justify-center gap-3">
+            <button
+                type="button"
+                (click)="onEditRow({ row, index })"
+                class="text-gray-400 hover:text-[var(--primary-color)] transition-colors cursor-pointer"
+                title="Edit"
+            >
+                <i class="pi pi-pencil text-sm"></i>
+            </button>
+            <button
+                type="button"
+                (click)="onDuplicateRow({ row, index })"
+                class="text-gray-400 hover:text-[var(--primary-color)] transition-colors cursor-pointer"
+                title="Duplicate"
+            >
+                <i class="pi pi-copy text-sm"></i>
+            </button>
+            <button
+                type="button"
+                (click)="onRemoveRow({ row, index })"
+                class="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+                title="Delete"
+            >
+                <i class="pi pi-trash text-sm"></i>
+            </button>
+        </div>
+    </ng-template>
+</app-data-table>
+
+<!-- Voucher Details entry modal (opened by Add Row / Edit) -->
+<app-voucher-detail-modal
+    [visible]="modalVisible"
+    (visibleChange)="onModalVisibleChange($event)"
+    [taxRate]="taxRate"
+    [editRow]="editingRow"
+    [bankAccountId]="bankAccountId"
+    (saved)="onModalSaved($event)"
+/>

@@ -1,0 +1,205 @@
+<div class="bg-white rounded-xl border border-gray-200 p-5">
+
+    <!-- ── Caption: column toggle + export + global search ─────────────────── -->
+    @if (showGlobalSearch || showColumnToggle || showExport || showClear) {
+        <div class="flex items-center justify-between gap-4 mb-4">
+            <div class="flex items-center gap-3">
+                @if (showColumnToggle) {
+                    <p-multiselect
+                        [options]="columns"
+                        [(ngModel)]="visibleColumns"
+                        optionLabel="header"
+                        display="chip"
+                        placeholder="Columns"
+                        [showHeader]="false"
+                        styleClass="text-sm"
+                    />
+                }
+                @if (showExport) {
+                    <button
+                        type="button"
+                        (click)="exportCsv()"
+                        class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                    >
+                        <i class="pi pi-download text-xs"></i>
+                        Export
+                    </button>
+                }
+                @if (showClear) {
+                    <button
+                        type="button"
+                        (click)="clearTable()"
+                        class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                        title="Clear filters, sort, and search"
+                    >
+                        <i class="pi pi-filter-slash text-xs"></i>
+                        Clear
+                    </button>
+                }
+            </div>
+
+            @if (showGlobalSearch) {
+                <div class="relative w-full max-w-sm">
+                    <i class="pi pi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input
+                        #searchBox
+                        type="text"
+                        placeholder="Search..."
+                        (input)="onGlobalFilter(searchBox.value)"
+                        class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm text-gray-700 placeholder-gray-400 outline-none focus:bg-white focus:border-gray-200 transition-colors"
+                    />
+                </div>
+            }
+        </div>
+    }
+
+    <!-- ── The PrimeNG table (all features wired via flags) ────────────────── -->
+    <p-table
+        #dt
+        [value]="data"
+        [columns]="visibleColumns"
+        [dataKey]="dataKey"
+        [paginator]="showPaginator"
+        [rows]="rows"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [lazy]="lazy"
+        [totalRecords]="totalRecords"
+        (onLazyLoad)="lazyLoad.emit($event)"
+        [globalFilterFields]="effectiveGlobalFilterFields"
+        [scrollable]="scrollable"
+        [scrollHeight]="scrollHeight"
+        [resizableColumns]="resizable"
+        [columnResizeMode]="columnResizeMode"
+        [selectionMode]="selectionMode"
+        [selection]="selection"
+        (selectionChange)="onSelectionChange($event)"
+        [rowGroupMode]="effectiveRowGroupMode"
+        [groupRowsBy]="rowGroupField ?? ''"
+        [loading]="loading"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        [tableStyle]="{ 'min-width': '40rem' }"
+        styleClass="p-datatable-sm"
+    >
+        <!-- Header -->
+        <ng-template #header let-cols>
+            <tr>
+                @if (selectionMode === 'multiple') {
+                    <th
+                        pFrozenColumn
+                        [frozen]="true"
+                        alignFrozen="left"
+                        style="width: 3rem"
+                    >
+                        <p-tableHeaderCheckbox />
+                    </th>
+                }
+                @for (col of cols; track col.field) {
+                    <th
+                        pFrozenColumn
+                        pResizableColumn
+                        [pSortableColumn]="col.sortable !== false ? col.field : ''"
+                        [pSortableColumnDisabled]="col.sortable === false"
+                        [frozen]="!!col.frozen"
+                        [alignFrozen]="col.frozen === 'right' ? 'right' : 'left'"
+                        [ngClass]="alignClass(col)"
+                        [style.width]="col.width"
+                    >
+                        <div class="flex items-center gap-2"
+                             [class.justify-end]="col.align === 'right' || (isNumeric(col) && !col.align)"
+                             [class.justify-center]="col.align === 'center'">
+                            <span>{{ col.header }}</span>
+                            @if (col.sortable !== false) {
+                                <p-sortIcon [field]="col.field" />
+                            }
+                            @if (col.filterable && filterDisplay === 'menu') {
+                                <p-columnFilter
+                                    [type]="filterType(col)"
+                                    [field]="col.field"
+                                    display="menu"
+                                />
+                            }
+                        </div>
+                    </th>
+                }
+            </tr>
+
+            @if (filterDisplay === 'row') {
+                <tr>
+                    @if (selectionMode === 'multiple') {
+                        <th pFrozenColumn [frozen]="true" alignFrozen="left"></th>
+                    }
+                    @for (col of cols; track col.field) {
+                        <th>
+                            @if (col.filterable) {
+                                <p-columnFilter
+                                    [type]="filterType(col)"
+                                    [field]="col.field"
+                                    display="row"
+                                />
+                            }
+                        </th>
+                    }
+                </tr>
+            }
+        </ng-template>
+
+        <!-- Row group header -->
+        @if (rowGroupField) {
+            <ng-template #groupheader let-row>
+                <tr>
+                    <td [attr.colspan]="bodyColspan" class="font-semibold bg-gray-50 text-gray-700">
+                        {{ row[rowGroupField] }}
+                    </td>
+                </tr>
+            </ng-template>
+        }
+
+        <!-- Body -->
+        <ng-template #body let-row let-cols="columns">
+            <tr (click)="rowClick.emit(row)" (dblclick)="rowDblClick.emit(row)">
+                @if (selectionMode === 'multiple') {
+                    <td
+                        pFrozenColumn
+                        [frozen]="true"
+                        alignFrozen="left"
+                    >
+                        <p-tableCheckbox [value]="row" />
+                    </td>
+                }
+                @for (col of cols; track col.field) {
+                    <td
+                        pFrozenColumn
+                        [frozen]="!!col.frozen"
+                        [alignFrozen]="col.frozen === 'right' ? 'right' : 'left'"
+                        [ngClass]="alignClass(col)"
+                    >
+                        @if (cellTemplate(col.field); as tpl) {
+                            <ng-container
+                                [ngTemplateOutlet]="tpl"
+                                [ngTemplateOutletContext]="{ $implicit: row, col: col }"
+                            ></ng-container>
+                        } @else if (col.type === 'number' || col.type === 'currency') {
+                            {{ row[col.field] | number: '1.2-2' }}
+                        } @else if (col.type === 'date') {
+                            {{ row[col.field] | date: 'dd MMM, yyyy' }}
+                        } @else if (col.type === 'boolean') {
+                            <i class="pi" [ngClass]="row[col.field] ? 'pi-check text-emerald-500' : 'pi-times text-red-500'"></i>
+                        } @else {
+                            {{ row[col.field] }}
+                        }
+                    </td>
+                }
+            </tr>
+        </ng-template>
+
+        <!-- Empty state -->
+        <ng-template #emptymessage>
+            <tr>
+                <td [attr.colspan]="bodyColspan" class="text-center text-gray-400 py-8">
+                    {{ emptyMessage }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

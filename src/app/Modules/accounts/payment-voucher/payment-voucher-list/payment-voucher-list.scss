@@ -1,0 +1,16 @@
+:host {
+    display: block;
+}
+
+
+:host {
+    display: block;
+}
+
+:host ::ng-deep {
+    // Remove default dialog content padding so our custom layout controls spacing
+    .p-dialog-content {
+        padding: 0 !important;
+        border-radius: inherit;
+    }
+}

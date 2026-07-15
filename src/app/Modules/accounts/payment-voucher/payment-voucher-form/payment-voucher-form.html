@@ -1,0 +1,225 @@
+<div class="pv-form">
+    <!-- ── Header bar (full-bleed: breaks out of the layout's 2rem padding) ── -->
+    <div class="flex items-center justify-between bg-white border-b border-gray-200 -mx-8 px-4 py-3 sticky top-20 z-20">
+        <div class="flex items-center gap-3">
+            <h4 class="text-base font-semibold text-gray-800">{{ title() }}</h4>
+            <span
+                class="px-2.5 py-0.5 rounded-full text-xs font-semibold border -mt-[25px] -ml-[6px]"
+                [ngClass]="{
+                    'bg-green-50 text-green-600 border-green-200': status() === 'Draft',
+                    'bg-blue-50 text-blue-600 border-blue-200': status() === 'Posted',
+                    'bg-red-50 text-red-500 border-red-200': status() === 'Cancelled'
+                }"
+            >
+                {{ status() }}
+            </span>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button
+                type="button"
+                (click)="onCancel()"
+                class="px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                (click)="onSaveAndNew()"
+                class="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--primary-color)] text-sm font-medium text-white hover:bg-[var(--primary-hover)] transition-colors cursor-pointer"
+            >
+                <i class="pi pi-save text-sm"></i>
+                Save &amp; New
+            </button>
+
+            @if (isEditMode()) {
+            <div class="relative">
+                <button
+                    type="button"
+                    (click)="togglePrintMenu($event)"
+                    class="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                >
+                    <i class="pi pi-print text-sm"></i>
+                    Print
+                    <i class="pi pi-chevron-down text-xs" [class.rotate-180]="printMenuOpen()"></i>
+                </button>
+
+                @if (printMenuOpen()) {
+                    <div
+                        class="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50"
+                        (click)="$event.stopPropagation()"
+                    >
+                        <button
+                            type="button"
+                            (click)="print('pdf')"
+                            class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                        >
+                            <i class="pi pi-file-pdf text-gray-400"></i>
+                            Download PDF
+                        </button>
+                        <button
+                            type="button"
+                            (click)="print('print')"
+                            class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                        >
+                            <i class="pi pi-print text-gray-400"></i>
+                            Print
+                        </button>
+                    </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- ── Form body ──────────────────────────────────────────────────────── -->
+    <form [formGroup]="form" class="-mx-8 px-4 py-4">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <!-- Section title -->
+            <div class="flex items-center gap-2 mb-7">
+                <span class="w-1.5 h-5 rounded-sm bg-[var(--primary-color)]"></span>
+                <h5 style="margin: 0">Voucher Header</h5>
+            </div>
+
+            <div class="flex flex-col xl:flex-row gap-8">
+                <!-- Left: main fields -->
+                <div class="flex-1 flex flex-col gap-6">
+                    <!-- Row 1: Voucher No / Date / Bank Account -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[150px_170px_1fr] gap-4">
+                        <p-floatlabel variant="on">
+                            <input pInputText id="voucherNo" formControlName="voucherNo" class="w-full" />
+                            <label for="voucherNo">Voucher No <span class="text-red-500">*</span></label>
+                        </p-floatlabel>
+
+                        <p-floatlabel variant="on">
+                            <p-datepicker
+                                inputId="voucherDate"
+                                formControlName="voucherDate"
+                                dateFormat="dd-M-yy"
+                                appendTo="body"
+                                styleClass="w-full"
+                            />
+                            <label for="voucherDate">Voucher Date <span class="text-red-500">*</span></label>
+                        </p-floatlabel>
+
+                        <div>
+                            <p-floatlabel variant="on">
+                                <p-select
+                                    inputId="bankAccount"
+                                    formControlName="bankAccount"
+                                    [options]="bankAccounts()"
+                                    optionLabel="accountName"
+                                    optionValue="id"
+                                    [filter]="true"
+                                    appendTo="body"
+                                    styleClass="w-full"
+                                />
+                                <label for="bankAccount">Bank Account <span class="text-red-500">*</span></label>
+                            </p-floatlabel>
+                            @if (selectedBalance) {
+                                <div class="flex justify-end gap-2 mt-1 pr-1 text-xs">
+                                    <span class="text-gray-400">Balance:</span>
+                                    <span class="font-semibold text-gray-600">{{ selectedBalance }}</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Narration -->
+                    <p-floatlabel variant="on">
+                        <input pInputText id="narration" formControlName="narration" class="w-full" />
+                        <label for="narration">Narration (Optional)</label>
+                    </p-floatlabel>
+                </div>
+
+                <!-- Right: currency / exchange-rate block -->
+                <div class="w-full xl:w-[340px] xl:shrink-0 flex flex-col gap-5">
+                    <div class="grid grid-cols-2 gap-3">
+                        <p-floatlabel variant="on">
+                            <p-select
+                                inputId="lcyCurrency"
+                                formControlName="lcyCurrency"
+                                [options]="baseCurrencies()"
+                                optionLabel="currencyCode"
+                                optionValue="id"
+                                appendTo="body"
+                                styleClass="w-full"
+                            />
+                            <label for="lcyCurrency">Lcy Currency</label>
+                        </p-floatlabel>
+
+                        <p-floatlabel variant="on">
+                            <p-inputnumber
+                                inputId="lcyExRate"
+                                formControlName="lcyExRate"
+                                [minFractionDigits]="2"
+                                [maxFractionDigits]="4"
+                                styleClass="w-full"
+                                inputStyleClass="w-full text-right"
+                            />
+                            <label for="lcyExRate">Ex Rate</label>
+                        </p-floatlabel>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <p-floatlabel variant="on">
+                            <p-select
+                                inputId="fcyCurrency"
+                                formControlName="fcyCurrency"
+                                [options]="currencies()"
+                                optionLabel="currencyCode"
+                                optionValue="id"
+                                appendTo="body"
+                                styleClass="w-full"
+                            />
+                            <label for="fcyCurrency">Fcy Currency</label>
+                        </p-floatlabel>
+
+                        <p-floatlabel variant="on">
+                            <p-inputnumber
+                                inputId="fcyExRate"
+                                formControlName="fcyExRate"
+                                [minFractionDigits]="2"
+                                [maxFractionDigits]="4"
+                                styleClass="w-full"
+                                inputStyleClass="w-full text-right"
+                            />
+                            <label for="fcyExRate">Ex Rate</label>
+                        </p-floatlabel>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Voucher Details (table + entry modal) ──────────────────────── -->
+        <app-voucher-details
+            class="block mt-4"
+            [taxRate]="detailTaxRate"
+            [bankAccountId]="f.bankAccount.value"
+            [initialRows]="initialDetailRows()"
+            (totalsChange)="onDetailsTotals($event)"
+        />
+
+        <!-- ── Tax deductions + Summary ───────────────────────────────────── -->
+        <div class="mt-4 flex flex-col xl:flex-row gap-4">
+            <app-voucher-tax
+                class="block flex-1"
+                [initialTaxRows]="initialTaxRows()"
+                (totalTaxChange)="onTaxTotal($event)"
+                (taxRateChange)="onTaxRate($event)"
+            />
+            <app-voucher-summary
+                class="block w-full xl:w-80 xl:shrink-0"
+                [grossAmount]="summaryGross"
+                [discount]="summaryDiscount"
+                [totalTax]="summaryTotalTax"
+                [valid]="summaryValid"
+                [validationMessage]="summaryValidationMessage"
+            />
+        </div>
+
+        <!-- ── Voucher tabs (Attachments / Audit Log / Approval / Linked) ──── -->
+        <app-voucher-tabs class="block mt-4" [voucherId]="currentVoucherId()" />
+    </form>
+</div>

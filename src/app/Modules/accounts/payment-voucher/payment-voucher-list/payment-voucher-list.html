@@ -1,0 +1,287 @@
+<div class="pv-list">
+    <!-- ── Header bar (full-bleed: breaks out of the layout's 2rem padding) ── -->
+    <div class="flex items-center justify-between bg-white border-b border-gray-200 -mx-8 px-4 py-3 sticky top-20 z-20">
+        <div>
+            <h4 class="text-base font-semibold text-gray-800" style="margin: 0">Payment Voucher</h4>
+            <p class="text-xs text-gray-400 mt-0.5">View, search and manage all payment vouchers.</p>
+        </div>
+
+        <button
+            type="button"
+            (click)="onNew()"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--primary-color)] text-sm font-medium text-white hover:bg-[var(--primary-hover)] transition-colors cursor-pointer"
+        >
+            <i class="pi pi-plus text-sm"></i>
+            New Voucher
+        </button>
+    </div>
+
+    <!-- ── Filters bar: opener on the left, quick-filter chips on the right ── -->
+    <div class="-mx-8 px-4 pt-4">
+        <div class="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-4 py-3">
+            <button
+                type="button"
+                (click)="openFiltersDialog()"
+                class="flex items-center gap-2 cursor-pointer group"
+                title="Advanced filters"
+            >
+                <span class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                    <i class="pi pi-filter text-[var(--primary-color)] text-sm"></i>
+                </span>
+                @if (hasActiveFilters()) {
+                    <span class="px-3 py-1 rounded-full bg-[var(--primary-color)] text-white text-xs font-semibold">Filters on</span>
+                } @else {
+                    <span class="text-sm font-semibold text-gray-700">Filters</span>
+                }
+            </button>
+
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-gray-400 mr-1">Quick Filters:</span>
+                @for (qf of quickFilters; track qf.id) {
+                    @if (qf.id === selectedQuickFilter()) {
+                        <!-- Active -->
+                        <button
+                            type="button"
+                            (click)="setQuickFilter(qf.id)"
+                            class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--primary-color)] text-white text-xs font-semibold cursor-pointer"
+                        >
+                            @if (qf.dot) { <span class="w-1.5 h-1.5 rounded-full bg-white"></span> }
+                            {{ qf.label }}
+                        </button>
+                    } @else {
+                        <!-- Inactive -->
+                        <button
+                            type="button"
+                            (click)="setQuickFilter(qf.id)"
+                            class="flex items-center gap-1.5 px-3 py-1 rounded-full border border-gray-200 text-gray-600 text-xs font-medium hover:bg-gray-50 transition-colors cursor-pointer"
+                        >
+                            @if (qf.dot) { <span class="w-1.5 h-1.5 rounded-full" [ngClass]="qf.dot"></span> }
+                            {{ qf.label }}
+                        </button>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Listing (uses the global app-main-data-grid) ───────────────────── -->
+    <div class="-mx-8 px-4 py-4">
+        <app-main-data-grid
+            [columns]="columns"
+            [data]="vouchers()"
+            dataKey="id"
+            selectionMode="multiple"
+            [(selection)]="selectedVouchers"
+            [showColumnToggle]="true"
+            [showExport]="true"
+            exportFilename="payment-vouchers"
+            filterDisplay="menu"
+            [resizable]="true"
+            [lazy]="true"
+            [totalRecords]="totalCount()"
+            [loading]="listLoading()"
+            [rows]="25"
+            (lazyLoad)="onLazyLoad($event)"
+            (rowDblClick)="openVoucher($event)"
+        >
+            <!-- Voucher No: avatar + number + type subtitle -->
+            <ng-template tableCell="voucherNo" let-row>
+                <div class="flex items-center gap-3">
+                    <span
+                        class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold shrink-0"
+                        [ngClass]="avatarClassFor(row.voucherNo)"
+                    >
+                        {{ initials(row.voucherNo) }}
+                    </span>
+                    <div class="leading-tight">
+                        <div class="font-semibold text-gray-800">{{ row.voucherNo }}</div>
+                        <div class="text-xs text-gray-400">{{ row.voucherType }}</div>
+                    </div>
+                </div>
+            </ng-template>
+
+            <!-- Date -->
+            <ng-template tableCell="voucherDate" let-row>
+                {{ row.voucherDate | date: 'dd-MMM-yyyy' }}
+            </ng-template>
+
+            <!-- Amount (PKR) -->
+            <ng-template tableCell="totalAmountPkr" let-row>
+                {{ row.totalAmountPkr | number: '1.2-2' }}
+            </ng-template>
+
+            <!-- FCY amount -->
+            <ng-template tableCell="totalAmountFcy" let-row>
+                @if (row.totalAmountFcy) {
+                    {{ row.totalAmountFcy | number: '1.2-2' }}
+                } @else {
+                    <span class="text-gray-300">—</span>
+                }
+            </ng-template>
+
+            <!-- Status: colored dot + label (resolved via isPosted + status fallback) -->
+            <ng-template tableCell="status" let-row>
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full" [ngClass]="statusDot[displayStatus(row)] || 'bg-gray-400'"></span>
+                    <span class="text-gray-600">{{ displayStatus(row) }}</span>
+                </div>
+            </ng-template>
+
+            <!-- Created By: graceful fallback when null -->
+            <ng-template tableCell="createdByName" let-row>
+                @if (row.createdByName) {
+                    {{ row.createdByName }}
+                } @else {
+                    <span class="text-gray-300">—</span>
+                }
+            </ng-template>
+
+            <!-- Remarks -->
+            <ng-template tableCell="remarks" let-row>
+                @if (row.remarks) {
+                    <span class="text-gray-600">{{ row.remarks }}</span>
+                } @else {
+                    <span class="text-gray-300">—</span>
+                }
+            </ng-template>
+
+            <!-- Actions: edit + print + (delete when not posted) -->
+            <ng-template tableCell="actions" let-row>
+                <div class="flex items-center justify-center gap-3">
+                    <button
+                        type="button"
+                        (click)="editVoucher(row, $event)"
+                        class="text-[var(--primary-color)] hover:text-[var(--primary-hover)] transition-colors cursor-pointer"
+                        title="Edit"
+                    >
+                        <i class="pi pi-pencil text-sm"></i>
+                    </button>
+                    <button
+                        type="button"
+                        (click)="printVoucher(row, $event)"
+                        class="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                        title="Print"
+                    >
+                        <i class="pi pi-print text-sm"></i>
+                    </button>
+                    @if (canDelete(row)) {
+                        <button
+                            type="button"
+                            (click)="deleteVoucher(row, $event)"
+                            class="text-red-500 hover:text-red-600 transition-colors cursor-pointer"
+                            title="Delete"
+                        >
+                            <i class="pi pi-trash text-sm"></i>
+                        </button>
+                    }
+                    @if (canReverse(row)) {
+                        <button
+                            type="button"
+                            (click)="reverseVoucher(row, $event)"
+                            class="text-amber-500 hover:text-amber-600 transition-colors cursor-pointer"
+                            title="Reverse"
+                        >
+                            <i class="pi pi-replay text-sm"></i>
+                        </button>
+                    }
+                </div>
+            </ng-template>
+        </app-main-data-grid>
+    </div>
+
+    <!-- ── Advanced Filters dialog ─────────────────────────────────────────── -->
+    <p-dialog
+        [visible]="filtersDialogVisible()"
+        (visibleChange)="filtersDialogVisible.set($event)"
+        [modal]="true"
+        [draggable]="false"
+        [resizable]="false"
+        [showHeader]="false"
+        [dismissableMask]="true"
+        [style]="{ width: '28rem', maxWidth: '92vw' }"
+        styleClass="advanced-filters-dialog"
+    >
+        <div class="flex items-center justify-between px-5 py-3 border-b border-gray-200">
+            <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                    <i class="pi pi-filter text-[var(--primary-color)] text-sm"></i>
+                </span>
+                <h5 style="margin: 0">Advanced Filters</h5>
+            </div>
+            <button
+                type="button"
+                (click)="closeFiltersDialog()"
+                class="text-gray-400 hover:text-gray-600 cursor-pointer"
+                title="Close"
+            >
+                <i class="pi pi-times text-sm"></i>
+            </button>
+        </div>
+
+        <form [formGroup]="filterForm" class="p-5 flex flex-col gap-4">
+            <div class="grid grid-cols-2 gap-3">
+                <p-floatlabel variant="on">
+                    <p-datepicker
+                        inputId="fromDate"
+                        formControlName="fromDate"
+                        dateFormat="dd-M-yy"
+                        [showIcon]="true"
+                        appendTo="body"
+                        styleClass="w-full"
+                    />
+                    <label for="fromDate">From Date</label>
+                </p-floatlabel>
+                <p-floatlabel variant="on">
+                    <p-datepicker
+                        inputId="toDate"
+                        formControlName="toDate"
+                        dateFormat="dd-M-yy"
+                        [showIcon]="true"
+                        appendTo="body"
+                        styleClass="w-full"
+                    />
+                    <label for="toDate">To Date</label>
+                </p-floatlabel>
+            </div>
+
+            <app-select-field
+                fieldId="bankAccountId"
+                label="Bank Account"
+                formControlName="bankAccountId"
+                [options]="accountsWithAll()"
+                optionLabel="accountName"
+                optionValue="id"
+                [filter]="true"
+            />
+
+            <app-select-field
+                fieldId="debitAccountId"
+                label="Debit Account"
+                formControlName="debitAccountId"
+                [options]="accountsWithAll()"
+                optionLabel="accountName"
+                optionValue="id"
+                [filter]="true"
+            />
+        </form>
+
+        <div class="flex items-center justify-between gap-2 px-5 py-3 border-t border-gray-200">
+            <button
+                type="button"
+                (click)="resetAdvancedFilters()"
+                class="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+            >
+                <i class="pi pi-refresh text-xs"></i>
+                Reset Filter
+            </button>
+            <button
+                type="button"
+                (click)="applyAdvancedFilters()"
+                class="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--primary-color)] text-sm font-medium text-white hover:bg-[var(--primary-hover)] transition-colors cursor-pointer"
+            >
+                <i class="pi pi-check text-xs"></i>
+                Apply Filter
+            </button>
+        </div>
+    </p-dialog>
+</div>

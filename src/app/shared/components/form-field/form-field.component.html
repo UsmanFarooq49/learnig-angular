@@ -1,0 +1,39 @@
+<div class="form-field" [class.has-error]="hasError" [class]="widthClass">
+
+    <!-- Password -->
+    @if (type === 'password') {
+    <p-floatlabel [variant]="floatVariant">
+        <p-password [inputId]="fieldId" [ngModel]="value()" (ngModelChange)="onValueChange($event)" (blur)="onBlur()"
+            [disabled]="disabled" [toggleMask]="true" [feedback]="false" [fluid]="true" [invalid]="hasError" />
+        <label [for]="fieldId">
+            {{ label }}
+            @if (required) { <span class="form-field__required" aria-hidden="true">*</span> }
+        </label>
+    </p-floatlabel>
+    } @else {
+    <!-- Text / Email / Number / Tel -->
+    <p-floatlabel [variant]="floatVariant">
+        <input pInputText [id]="fieldId" [type]="type" [ngModel]="value()" (ngModelChange)="onValueChange($event)"
+            (blur)="onBlur()" [disabled]="disabled" [invalid]="hasError" class="w-full" />
+        <label [for]="fieldId">
+            {{ label }}
+            @if (required) { <span class="form-field__required" aria-hidden="true">*</span> }
+        </label>
+    </p-floatlabel>
+    }
+
+    <!-- Helper / Error text — only rendered when there is content to show -->
+    @if (hasError || hint) {
+    <div class="form-field__footer">
+        @if (hasError) {
+        <small class="form-field__error" role="alert">
+            <i class="pi pi-exclamation-circle" style="font-size: 0.875rem;"></i>
+            <span>{{ firstErrorMessage }}</span>
+        </small>
+        } @else {
+        <small class="form-field__hint">{{ hint }}</small>
+        }
+    </div>
+    }
+
+</div>

@@ -1,0 +1,271 @@
+:host {
+    display: block;
+    background: #f3f4f6;
+    min-height: 100vh;
+}
+
+.pv-print {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+
+    &__toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    &__center {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 3rem 1rem;
+        text-align: center;
+    }
+
+    &__sheet {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 2.5rem 2.25rem;
+        color: #1f2937;
+    }
+
+    &__company {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 2rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 2px solid #111827;
+    }
+
+    &__company-name {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        color: var(--primary-color);
+    }
+
+    &__company-meta {
+        margin: 0.2rem 0 0;
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+
+    &__doc-meta {
+        min-width: 14rem;
+    }
+
+    &__doc-meta-line {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8125rem;
+        margin: 0.15rem 0;
+        color: #374151;
+
+        span { color: #6b7280; }
+        strong.posted { color: #7c3aed; }
+    }
+
+    &__title {
+        margin: 1.75rem 0 1.25rem;
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #111827;
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        padding: 0.75rem 0 1rem;
+        border-bottom: 1px dashed #d1d5db;
+    }
+
+    &__grid-cell {
+        font-size: 0.8125rem;
+    }
+
+    &__label {
+        margin: 0;
+        color: #6b7280;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    &__value {
+        margin: 0.2rem 0 0;
+        font-weight: 600;
+    }
+
+    &__remarks {
+        padding: 1rem 0;
+        border-bottom: 1px dashed #d1d5db;
+    }
+
+    &__remarks-text {
+        margin: 0.25rem 0 0;
+        font-size: 0.875rem;
+    }
+
+    &__lines { padding: 1rem 0; }
+
+    &__table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.8125rem;
+
+        thead th {
+            text-align: left;
+            font-weight: 600;
+            padding: 0.6rem 0.5rem;
+            border-top: 1px solid #111827;
+            border-bottom: 1px solid #111827;
+            background: #f9fafb;
+            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-size: 0.7rem;
+        }
+
+        tbody td {
+            padding: 0.55rem 0.5rem;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: top;
+        }
+
+        tfoot td {
+            padding: 0.6rem 0.5rem;
+            border-top: 2px solid #111827;
+            font-weight: 600;
+        }
+
+        .num { text-align: right; }
+        .total-label { text-align: right; color: #374151; }
+
+        .pv-print__sub {
+            color: #9ca3af;
+            font-size: 0.7rem;
+            margin-top: 0.1rem;
+        }
+    }
+
+    &__taxes {
+        padding: 1.25rem 0 0;
+    }
+
+    &__section-title {
+        margin: 0 0 0.6rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #111827;
+    }
+
+    &__summary {
+        margin-top: 1.5rem;
+        margin-left: auto;
+        width: 100%;
+        max-width: 22rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        background: #f9fafb;
+        padding: 0.75rem 1rem;
+    }
+
+    &__summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.875rem;
+        padding: 0.3rem 0;
+        color: #374151;
+
+        span { color: #6b7280; }
+
+        &--net {
+            margin-top: 0.4rem;
+            padding-top: 0.6rem;
+            border-top: 1px solid #d1d5db;
+            font-size: 1rem;
+
+            strong { color: var(--primary-color); }
+        }
+    }
+
+    &__signatures {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.25rem;
+        padding-top: 3rem;
+    }
+
+    &__sig {
+        text-align: center;
+        font-size: 0.75rem;
+        color: #6b7280;
+
+        p { margin: 0.4rem 0 0; }
+    }
+
+    &__sig-line {
+        border-top: 1px solid #9ca3af;
+        margin: 0 0.5rem;
+    }
+
+    &__footer {
+        margin-top: 2rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid #e5e7eb;
+        text-align: center;
+        font-size: 0.7rem;
+        color: #9ca3af;
+    }
+}
+
+/* ── Print rules ──────────────────────────────────────────────────────────── */
+@media print {
+    :host {
+        background: white;
+    }
+
+    /* On-screen toolbar must never appear in the printout. */
+    .pv-print__toolbar {
+        display: none !important;
+    }
+
+    .pv-print {
+        padding: 0;
+        max-width: none;
+    }
+
+    .pv-print__sheet {
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 0;
+    }
+
+    /* Avoid awkward page breaks inside critical blocks */
+    .pv-print__company,
+    .pv-print__title,
+    .pv-print__grid,
+    .pv-print__taxes,
+    .pv-print__summary,
+    .pv-print__signatures,
+    .pv-print__table tr {
+        break-inside: avoid;
+    }
+}

@@ -1,0 +1,30 @@
+:host {
+    display: block;
+}
+
+:host ::ng-deep {
+    // Remove default dialog content padding so our custom layout controls spacing
+    .voucher-detail-modal .p-dialog-content {
+        padding: 0;
+        border-radius: inherit;
+    }
+
+    // Full-width form controls inside the modal
+    p-floatlabel,
+    .p-floatlabel {
+        display: block;
+        width: 100%;
+    }
+
+    p-inputnumber,
+    p-datepicker {
+        width: 100%;
+    }
+
+    .p-inputnumber,
+    .p-inputnumber .p-inputnumber-input,
+    .p-datepicker,
+    .p-datepicker .p-inputtext {
+        width: 100%;
+    }
+}

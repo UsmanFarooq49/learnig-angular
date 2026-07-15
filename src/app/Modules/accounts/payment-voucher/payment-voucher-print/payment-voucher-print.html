@@ -1,0 +1,171 @@
+<div class="pv-print">
+    <!-- Top toolbar — visible on screen only -->
+    <div class="pv-print__toolbar print:hidden">
+        <h4 class="text-base font-semibold text-gray-800" style="margin: 0">Print Preview</h4>
+        <div class="flex items-center gap-2">
+            <button
+                type="button"
+                onclick="window.close()"
+                class="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+            >
+                <i class="pi pi-times text-sm"></i>
+                Close
+            </button>
+            <button
+                type="button"
+                (click)="print()"
+                [disabled]="!voucher()"
+                class="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--primary-color)] text-sm font-medium text-white hover:bg-[var(--primary-hover)] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                <i class="pi pi-print text-sm"></i>
+                Print
+            </button>
+        </div>
+    </div>
+
+    @if (loading()) {
+        <div class="pv-print__center">
+            <i class="pi pi-spin pi-spinner text-2xl text-gray-400"></i>
+            <p class="mt-2 text-sm text-gray-500">Loading voucher…</p>
+        </div>
+    } @else if (error()) {
+        <div class="pv-print__center">
+            <i class="pi pi-exclamation-triangle text-2xl text-red-500"></i>
+            <p class="mt-2 text-sm text-gray-700">{{ error() }}</p>
+        </div>
+    } @else if (voucher(); as v) {
+        <!-- ── Printable sheet ─────────────────────────────────────────────── -->
+        <article class="pv-print__sheet">
+            <!-- Company header -->
+            <header class="pv-print__company">
+                <div class="pv-print__company-info">
+                    <h2 class="pv-print__company-name">ZASCARE</h2>
+                    <p class="pv-print__company-meta">Karachi, Pakistan</p>
+                    <p class="pv-print__company-meta">contact&#64;zascare.com</p>
+                </div>
+                <div class="pv-print__doc-meta">
+                    <p class="pv-print__doc-meta-line">
+                        <span>Document #</span>
+                        <strong>{{ v.voucherNo }}</strong>
+                    </p>
+                    <p class="pv-print__doc-meta-line">
+                        <span>Date</span>
+                        <strong>{{ v.voucherDate | date: 'dd MMM, yyyy' }}</strong>
+                    </p>
+                    <p class="pv-print__doc-meta-line">
+                        <span>Status</span>
+                        <strong [class.posted]="v.isPosted">{{ statusLabel() }}</strong>
+                    </p>
+                </div>
+            </header>
+
+            <!-- Title -->
+            <h1 class="pv-print__title">{{ v.voucherType || 'Bank Payment Voucher' }}</h1>
+
+            <!-- Header grid -->
+            <section class="pv-print__grid">
+                <div class="pv-print__grid-cell">
+                    <p class="pv-print__label">Bank Account</p>
+                    <p class="pv-print__value">{{ v.accountName }}</p>
+                </div>
+                <div class="pv-print__grid-cell">
+                    <p class="pv-print__label">LCY Currency</p>
+                    <p class="pv-print__value">
+                        Base ({{ v.baseExchangeRate | number: '1.2-4' }})
+                    </p>
+                </div>
+                <div class="pv-print__grid-cell">
+                    <p class="pv-print__label">FCY Exchange Rate</p>
+                    <p class="pv-print__value">{{ v.fcyExchangeRate | number: '1.2-4' }}</p>
+                </div>
+            </section>
+
+            @if (v.remarks) {
+                <section class="pv-print__remarks">
+                    <p class="pv-print__label">Narration</p>
+                    <p class="pv-print__remarks-text">{{ v.remarks }}</p>
+                </section>
+            }
+
+            <!-- Detail lines -->
+            <section class="pv-print__lines">
+                <table class="pv-print__table">
+                    <thead>
+                        <tr>
+                            <th style="width: 3rem">#</th>
+                            <th>Account</th>
+                            <th>Description</th>
+                            <th>Cheque No</th>
+                            <th class="num">Debit</th>
+                            <th class="num">Credit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (line of v.voucherDetails; track line.id; let i = $index) {
+                            <tr>
+                                <td>{{ i + 1 }}</td>
+                                <td>
+                                    <strong>{{ line.accountName }}</strong>
+                                    @if (line.accountCode) {
+                                        <div class="pv-print__sub">{{ line.accountCode }}</div>
+                                    }
+                                </td>
+                                <td>{{ line.payeeTitle || line.comments || '—' }}</td>
+                                <td>{{ line.chequeNumber || '—' }}</td>
+                                <td class="num">{{ line.debit | number: '1.2-2' }}</td>
+                                <td class="num">{{ line.credit | number: '1.2-2' }}</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" class="total-label">Total</td>
+                            <td class="num"><strong>{{ v.totalDebit | number: '1.2-2' }}</strong></td>
+                            <td class="num"><strong>{{ v.totalCredit | number: '1.2-2' }}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </section>
+
+            <!-- Summary -->
+            <section class="pv-print__summary">
+                <div class="pv-print__summary-row">
+                    <span>Gross Amount</span>
+                    <strong>{{ v.totalDebit | number: '1.2-2' }}</strong>
+                </div>
+                <div class="pv-print__summary-row">
+                    <span>Total Tax</span>
+                    <strong>{{ totalTax() | number: '1.2-2' }}</strong>
+                </div>
+                <div class="pv-print__summary-row pv-print__summary-row--net">
+                    <span>Net Amount</span>
+                    <strong>{{ netPayable() | number: '1.2-2' }} PKR</strong>
+                </div>
+            </section>
+
+            <!-- Signatures -->
+            <section class="pv-print__signatures">
+                <div class="pv-print__sig">
+                    <div class="pv-print__sig-line"></div>
+                    <p>Prepared By</p>
+                </div>
+                <div class="pv-print__sig">
+                    <div class="pv-print__sig-line"></div>
+                    <p>Checked By</p>
+                </div>
+                <div class="pv-print__sig">
+                    <div class="pv-print__sig-line"></div>
+                    <p>Approved By</p>
+                </div>
+                <div class="pv-print__sig">
+                    <div class="pv-print__sig-line"></div>
+                    <p>Received By</p>
+                </div>
+            </section>
+
+            <footer class="pv-print__footer">
+                <span>Generated by Zascare ERP · {{ v.createdOn | date: 'dd MMM, yyyy hh:mm a' }}</span>
+            </footer>
+        </article>
+    }
+</div>

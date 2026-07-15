@@ -1,0 +1,19 @@
+<div class="px-8 py-4 border-b border-gray-200">
+    <div class="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+            <p class="text-xs text-gray-400 flex items-center gap-1">
+                Reports <i class="pi pi-angle-right text-[9px]"></i> General Ledger
+            </p>
+            <div class="text-2xl leading-tight font-bold text-gray-800 mt-0.5">General Ledger</div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap justify-end">
+            <button type="button" (click)="action.emit('favorite')" class="gl-btn"><i class="pi pi-star text-xs"></i> Favorite</button>
+            <button type="button" (click)="action.emit('export')" class="gl-btn"><i class="pi pi-download text-xs"></i> Export <i class="pi pi-angle-down text-[10px]"></i></button>
+            <button type="button" (click)="action.emit('print')" class="gl-btn"><i class="pi pi-print text-xs"></i> Print</button>
+            <button type="button" (click)="action.emit('share')" class="gl-btn"><i class="pi pi-share-alt text-xs"></i> Share</button>
+            <button type="button" (click)="action.emit('schedule')" class="gl-btn"><i class="pi pi-calendar text-xs"></i> Schedule</button>
+            <button type="button" (click)="action.emit('refresh')" class="gl-btn gl-btn--icon" title="Refresh"><i class="pi pi-refresh text-xs"></i></button>
+        </div>
+    </div>
+</div>

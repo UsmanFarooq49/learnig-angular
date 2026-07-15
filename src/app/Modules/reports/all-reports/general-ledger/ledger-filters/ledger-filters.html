@@ -1,0 +1,60 @@
+<div class="px-8 py-4">
+    <button type="button" (click)="toggleFilters()" class="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
+        <i class="pi text-xs" [ngClass]="filtersOpen() ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+        {{ filtersOpen() ? 'Hide Filters' : 'Show Filters' }}
+        @if (filterSummary()) {
+            <span class="text-gray-400 font-normal">| {{ filterSummary() }}</span>
+        }
+    </button>
+
+    @if (filtersOpen()) {
+        <form [formGroup]="filterForm" class="mt-3">
+            <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-x-4 gap-y-3">
+                <div class="gl-field">
+                    <label class="gl-label">From Date</label>
+                    <p-datepicker formControlName="fromDate" dateFormat="mm/dd/yy" [showIcon]="true" iconDisplay="input" appendTo="body" styleClass="w-full" />
+                </div>
+                <div class="gl-field">
+                    <label class="gl-label">To Date</label>
+                    <p-datepicker formControlName="toDate" dateFormat="mm/dd/yy" [showIcon]="true" iconDisplay="input" appendTo="body" styleClass="w-full" />
+                </div>
+                <div class="gl-field">
+                    <label class="gl-label">Fiscal Year</label>
+                    <p-select formControlName="fiscalYearId" [options]="fiscalYears()" optionLabel="name" optionValue="id" appendTo="body" styleClass="w-full" />
+                </div>
+                <div class="gl-field">
+                    <label class="gl-label">Branch</label>
+                    <p-select formControlName="branchId" [options]="branches()" optionLabel="name" optionValue="id" appendTo="body" styleClass="w-full" />
+                </div>
+                <div class="gl-field">
+                    <label class="gl-label">Company</label>
+                    <p-select formControlName="companyId" [options]="companies()" optionLabel="name" optionValue="id" appendTo="body" styleClass="w-full" />
+                </div>
+                <div class="gl-field">
+                    <label class="gl-label">Currency</label>
+                    <p-select formControlName="currencyId" [options]="currencies()" optionLabel="name" optionValue="id" [filter]="true" appendTo="body" styleClass="w-full" />
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between flex-wrap gap-3 mt-4">
+                <div class="flex items-center gap-2">
+                    <button type="button" (click)="applyFilter()" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--primary-color)] text-sm font-medium text-white hover:bg-[var(--primary-hover)] transition-colors cursor-pointer">
+                        <i class="pi pi-check text-xs"></i> Apply Filter
+                    </button>
+                    <button type="button" (click)="reset()" class="gl-btn"><i class="pi pi-refresh text-xs"></i> Reset</button>
+                </div>
+
+                <div class="flex items-center gap-5">
+                    <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                        <p-checkbox [(ngModel)]="showZeroBalances" [ngModelOptions]="{ standalone: true }" binary="true" inputId="zeroBal" />
+                        Show Zero Balances
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                        <p-checkbox [(ngModel)]="includeFcy" [ngModelOptions]="{ standalone: true }" binary="true" inputId="includeFcy" />
+                        Include FCY
+                    </label>
+                </div>
+            </div>
+        </form>
+    }
+</div>

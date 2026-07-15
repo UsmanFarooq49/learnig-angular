@@ -1,0 +1,223 @@
+// .login-page__form-panel {
+//     border-bottom-left-radius: 230px;
+//     border-top-left-radius: 19px;
+// }
+
+
+
+// ── Page Layout ───────────────────────────────────────────────────────────────
+.login-page {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--p-surface-ground);
+    background-color: #0062ff;
+
+    @media (max-width: 991px) {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
+
+    // ── Form Panel (Right) ────────────────────────────────────────────────────
+    &__form-panel {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem 2rem;
+        background: #ffffff;
+        margin: 1.5rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+
+        @media (max-width: 991px) {
+            margin: 0;
+            border-radius: 0;
+            overflow: visible;
+        }
+    }
+}
+
+
+// ── Form Card ─────────────────────────────────────────────────────────────────
+.form-card {
+    width: 100%;
+    max-width: 400px; // Slightly narrower to match Figma
+    transition: max-width 0.2s ease;
+
+    &--wide {
+        max-width: 640px;
+    }
+
+    &__header {
+        margin-bottom: 1.5rem;
+    }
+
+    &__title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #111827; // Force dark color for white background
+        margin: 0 0 0.5rem;
+        letter-spacing: -0.5px;
+
+        span {
+            color: #0062ff;
+        }
+    }
+
+    &__subtitle {
+        color: #6b7280; // Gray
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+    }
+
+    .field {
+        margin-bottom: 0;
+    }
+
+    &__options {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: -0.5rem;
+        margin-bottom: 0.25rem;
+    }
+
+    &__register {
+        text-align: center;
+        color: #6b7280;
+        font-size: 0.9rem;
+        margin: 1rem 0 0;
+    }
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 1.25rem;
+    row-gap: 1.1rem;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        row-gap: 1.1rem;
+    }
+}
+
+// ── Inline elements ───────────────────────────────────────────────────────────
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #4b5563;
+    cursor: pointer;
+
+    label {
+        cursor: pointer;
+    }
+}
+
+.forgot-link,
+.register-link {
+    color: #0062ff;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+        opacity: 0.75;
+    }
+}
+
+:host ::ng-deep {
+    .p-button-primary {
+        background-color: #0000ff !important;
+        border-color: #0000ff !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+    }
+
+    // Input overrides for Figma design (light gray background, no border)
+    .p-inputtext,
+    .p-password-input {
+        background: #f1f1f2 !important;
+        border: 1px solid transparent !important;
+        border-radius: 8px !important;
+        color: #1f2937 !important;
+        padding: 0.875rem 1rem !important;
+        width: 100%;
+        transition: all 0.2s ease;
+
+        &:focus {
+            background: #ffffff !important;
+            border-color: rgba(0, 98, 255, 0.4) !important;
+            box-shadow: 0 0 0 3px rgba(0, 98, 255, 0.1) !important;
+        }
+    }
+
+    .p-floatlabel label,
+    .float-label-text {
+        color: #9ca3af !important;
+        left: 1rem !important;
+        font-size: 0.9rem !important;
+    }
+
+
+    // Checkbox override
+    .p-checkbox-box {
+        border-radius: 4px !important;
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .p-checkbox-box.p-highlight {
+        background: #0000ff !important;
+        border-color: #0000ff !important;
+    }
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin: 0.3rem 0;
+
+    &::before,
+    &::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    span {
+        padding: 0 1rem;
+    }
+}
+
+:host ::ng-deep .google-btn {
+    border-color: #e5e7eb !important;
+    color: #4b5563 !important;
+    font-weight: 600 !important;
+
+    &:hover {
+        background-color: #f9fafb !important;
+    }
+
+    .pi-google {
+        color: #db4437; // Google red color for icon
+    }
+}

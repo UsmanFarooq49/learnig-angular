@@ -1,0 +1,29 @@
+.layout-topbar {
+    position: fixed;
+    height: 5rem;
+    z-index: 997;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 0 2rem 0 21.5rem;
+    background-color: #ffffff;
+    transition: padding-left var(--layout-section-transition-duration);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+// Collapsed (desktop): clear the 5rem icon rail.
+.layout-wrapper.layout-static-inactive {
+    .layout-topbar {
+        padding-left: 5.75rem;
+    }
+}
+
+@media (max-width: 991px) {
+    // Clear the 5rem icon rail so the hamburger / search sit to its right.
+    .layout-topbar {
+        padding: 0 1.5rem 0 5.75rem !important;
+    }
+}

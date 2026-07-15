@@ -1,0 +1,24 @@
+<div class="form-field" [class.has-error]="hasError" [class]="widthClass">
+    <div class="phone-input-wrapper" [class.has-error]="hasError" [class.disabled]="disabled">
+        <div class="country-selector font-medium select-none">
+            🇵🇰 +92 <i class="pi pi-angle-down text-xs ml-0.5 text-gray-500"></i>
+        </div>
+        <p-inputmask [mask]="mask" [placeholder]="placeholder" [ngModel]="value()"
+            (ngModelChange)="onValueChange($event)" (blur)="onBlur()" [disabled]="disabled" [invalid]="hasError"
+            styleClass="phone-input-mask" />
+    </div>
+
+    <!-- Helper / Error text -->
+    @if (hasError || hint) {
+    <div class="form-field__footer">
+        @if (hasError) {
+        <small class="form-field__error" role="alert">
+            <i class="pi pi-exclamation-circle" style="font-size: 0.875rem;"></i>
+            <span>{{ firstErrorMessage }}</span>
+        </small>
+        } @else {
+        <small class="form-field__hint">{{ hint }}</small>
+        }
+    </div>
+    }
+</div>

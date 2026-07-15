@@ -1,0 +1,25 @@
+<div class="flex -mx-8 min-h-[calc(100vh-5rem)]">
+    <!-- Secondary nav: financial reports (flush, attached panel) -->
+    <aside class="hidden lg:block w-60 shrink-0 bg-white border-r border-gray-200 px-3 py-4">
+        <div class="sticky top-24">
+            <p class="text-[11px] uppercase tracking-wide text-gray-400 font-semibold px-2 mb-2">Financial Reports</p>
+            <nav class="flex flex-col gap-0.5">
+                @for (r of reports; track r.label) {
+                    <a
+                        [routerLink]="r.route"
+                        [routerLinkActive]="r.placeholder ? '' : 'bg-blue-50 text-[var(--primary-color)] font-semibold'"
+                        class="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
+                    >
+                        <i class="pi {{ r.icon }} text-sm"></i>
+                        {{ r.label }}
+                    </a>
+                }
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Active report -->
+    <section class="flex-1 min-w-0 px-8 py-4">
+        <router-outlet />
+    </section>
+</div>

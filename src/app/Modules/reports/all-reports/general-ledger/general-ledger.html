@@ -1,0 +1,28 @@
+<div class="gl">
+    <!-- White header + filters band (flush with the topbar and the report menu) -->
+    <div class="-mt-4 -mx-8 bg-white">
+        <app-ledger-header (action)="onAction($event)" />
+        <app-ledger-filters (apply)="onApply($event)" (resetFilters)="onReset()" />
+    </div>
+
+    <!-- Summary cards -->
+    <app-ledger-cards
+        class="block mt-5"
+        [totalDebit]="totalDebit()"
+        [totalCredit]="totalCredit()"
+        [netMovement]="netMovement()"
+        [entryCount]="entryCount()"
+    />
+
+    <!-- Account hierarchy & transactions -->
+    <app-ledger-table
+        class="block mt-5"
+        [rows]="rows()"
+        [entryCount]="entryCount()"
+        [viewMode]="viewMode()"
+        [searchTerm]="searchTerm()"
+        (toggleNode)="toggle($event)"
+        (viewModeChange)="viewMode.set($event)"
+        (searchTermChange)="searchTerm.set($event)"
+    />
+</div>

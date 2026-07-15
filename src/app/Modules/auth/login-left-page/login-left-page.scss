@@ -1,0 +1,418 @@
+// .login-page__form-panel {
+//     border-bottom-left-radius: 230px;
+//     border-top-left-radius: 19px;
+// }
+
+
+
+:host {
+    position: relative;
+    flex: 0 0 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem 4rem 3rem 6%;
+    overflow: hidden;
+    background: #0062ff;
+    height: 100vh;
+
+    @media (max-width: 991px) {
+        display: none;
+    }
+}
+
+.login-page__brand {
+    display: contents;
+    /* Ensures the inner wrapper doesn't mess up flex box */
+}
+
+// ── Brand Content ─────────────────────────────────────────────────────────────
+.brand-content {
+    position: relative;
+    z-index: 2;
+    color: white;
+    max-width: 480px;
+    text-align: left;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(14, 165, 233, 0.3); // Cyan tint
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    // margin-bottom: 2rem;
+    border: 1px solid rgba(14, 165, 233, 0.5);
+    color: #bae6fd; // Light cyan text
+}
+
+.brand-title {
+    font-size: 3.8rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin: 0.3rem 0 1.5rem;
+    color: #f9fafb;
+
+    @media (max-width: 1440px) {
+        font-size: 3rem;
+    }
+}
+
+.brand-subtitle {
+    font-size: 1.05rem;
+    opacity: 0.85;
+    line-height: 1.6;
+    margin: 0 0 2rem;
+    max-width: 90%;
+
+    @media (max-width: 1440px) {
+        font-size: 0.95rem;
+    }
+}
+
+.system-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    .pulse {
+        width: 8px;
+        height: 8px;
+        background: #4ade80;
+        border-radius: 50%;
+        box-shadow: 0 0 0 rgba(74, 222, 128, 0.4);
+        animation: pulse 2s infinite;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(74, 222, 128, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+    }
+}
+
+// ── Floating Widgets ──────────────────────────────────────────────────────────
+.floating-widget {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 1rem;
+    color: white;
+    z-index: 1;
+
+    @media (max-width: 1440px) {
+        transform: scale(0.8);
+    }
+
+    .widget-icon {
+        display: inline-flex;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.25rem;
+        border-radius: 6px;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .widget-title {
+        font-size: 0.75rem;
+        opacity: 0.8;
+        display: inline-block;
+        margin-left: 0.5rem;
+    }
+
+    .widget-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+}
+
+.widget-orders {
+    top: 3%;
+    left: 15%;
+    width: 140px;
+
+    .widget-chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 4px;
+        height: 24px;
+        margin-top: 0.5rem;
+
+        .bar {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 2px 2px 0 0;
+        }
+    }
+}
+
+.widget-revenue {
+    top: 35%;
+    right: 10%;
+    width: 160px;
+
+    @media (max-width: 1440px) {
+        top: 26%;
+        right: 5%;
+    }
+
+    .widget-trend {
+        font-size: 0.8rem;
+        color: #4ade80;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .widget-progress {
+        height: 4px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2px;
+
+        .progress-bar {
+            height: 100%;
+            background: #60a5fa;
+            border-radius: 2px;
+        }
+    }
+}
+
+.floating-icon {
+    position: absolute;
+    z-index: 1;
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
+
+    img {
+        width: 50px;
+    }
+
+
+    // @media (max-width: 1440px) {
+    //     transform: scale(0.8);
+    // }
+}
+
+.icon-thumb {
+    top: 20%;
+    right: 40%;
+
+    @media (max-width: 1440px) {
+        right: 40%;
+    }
+}
+
+.icon-lock {
+    position: absolute;
+    bottom: 15%;
+    left: 80%;
+    // right: 15%;
+    font-size: 6rem;
+    transform: rotate(-10deg);
+    opacity: 0.9;
+    z-index: 1;
+    animation: float-lock 1s ease-in-out infinite;
+
+    img {
+        width: 85px !important;
+    }
+
+    @media (max-width: 1440px) {
+        left: 60%;
+        bottom: 20%;
+    }
+}
+
+@media (min-width: 1441px) {
+    .icon-lock {
+        left: 60%;
+        bottom: 20%;
+    }
+}
+
+.icon-leaf {
+    position: absolute;
+    bottom: 3%;
+    left: 25%;
+    opacity: 0.8;
+    z-index: 1;
+    animation: sway-leaf 4s ease-in-out infinite;
+
+    img {
+        width: 82px !important;
+    }
+
+    @media (max-width: 1440px) {
+        left: 15%;
+        bottom: 3%;
+
+        img {
+            width: 60px !important;
+        }
+    }
+}
+
+@keyframes float-lock {
+    0% {
+        transform: translateY(0px) rotate(-10deg);
+    }
+
+    50% {
+        transform: translateY(-15px) rotate(-10deg);
+    }
+
+    100% {
+        transform: translateY(0px) rotate(-10deg);
+    }
+}
+
+@keyframes sway-leaf {
+    0% {
+        transform: translateY(0px) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-12px) rotate(10deg);
+    }
+
+    100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+}
+
+// ── Form Card ─────────────────────────────────────────────────────────────────
+.form-card {
+    width: 100%;
+    max-width: 420px;
+
+    &__header {
+        margin-bottom: 2rem;
+    }
+
+    &__title {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: var(--p-text-color);
+        margin: 0 0 0.375rem;
+        letter-spacing: -0.3px;
+    }
+
+    &__subtitle {
+        color: var(--p-text-color-secondary);
+        font-size: 0.9375rem;
+        margin: 0;
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .field {
+        margin-bottom: 0.25rem;
+    }
+
+    &__options {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: -0.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    &__register {
+        text-align: center;
+        color: var(--p-text-color-secondary);
+        font-size: 0.9rem;
+        margin: 1rem 0 0;
+    }
+}
+
+// ── Inline elements ───────────────────────────────────────────────────────────
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    cursor: pointer;
+
+    label {
+        cursor: pointer;
+    }
+}
+
+.forgot-link,
+.register-link {
+    color: var(--p-primary-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+        opacity: 0.75;
+    }
+}
+
+:host ::ng-deep .p-button-primary {
+    background-color: #0000ff !important;
+    border-color: #0000ff !important;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin: 1rem 0;
+
+    &::before,
+    &::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    span {
+        padding: 0 1rem;
+    }
+}
+
+:host ::ng-deep .google-btn {
+    border-color: #e5e7eb !important;
+    color: #4b5563 !important;
+    font-weight: 600 !important;
+
+    &:hover {
+        background-color: #f9fafb !important;
+    }
+
+    .pi-google {
+        color: #db4437; // Google red color for icon
+    }
+}

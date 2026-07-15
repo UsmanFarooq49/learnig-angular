@@ -1,0 +1,30 @@
+:host {
+    display: block;
+}
+
+// Make FloatLabel wrappers and the PrimeNG controls span the full grid cell.
+:host ::ng-deep {
+    p-floatlabel,
+    .p-floatlabel {
+        display: block;
+        width: 100%;
+    }
+
+    p-select,
+    p-datepicker,
+    p-inputnumber {
+        width: 100%;
+    }
+
+    .p-select,
+    .p-datepicker,
+    .p-inputnumber,
+    .p-inputnumber .p-inputnumber-input,
+    .p-datepicker .p-inputtext {
+        width: 100%;
+    }
+
+    input[pInputText] {
+        width: 100%;
+    }
+}

@@ -1,0 +1,75 @@
+<!-- <p>signup works!</p> -->
+<div class="login-page">
+    <app-login-left-page />
+    <!-- ── Right: Form Panel ─────────────────────────────────────────── -->
+    <div class="login-page__form-panel">
+        <div class="form-card form-card--wide">
+
+            <div class="form-card__header">
+                <h2 class="form-card__title">Signup <span>ZAS ERP</span> 👋</h2>
+                <p class="form-card__subtitle">Manage your operations anytime, anywhere – securely in the cloud</p>
+            </div>
+
+            <form class="form-card__body" [formGroup]="form" (ngSubmit)="onSubmit()">
+
+                <div class="form-grid">
+                    <div class="field">
+                        <app-form-field fieldId="fullName" label="Full Name" type="text" [required]="true" floatVariant="on"
+                            formControlName="fullName" [control]="fullNameControl" />
+                    </div>
+
+                    <div class="field">
+                        <app-form-field fieldId="email1" label="Email Address" type="email" [required]="true"
+                            floatVariant="on" formControlName="email" [control]="emailControl" />
+                    </div>
+
+                    <div class="field">
+                        <app-form-field fieldId="businessName" label="Business Name" type="text" [required]="true"
+                            floatVariant="on" formControlName="businessName" [control]="businessNameControl" />
+                    </div>
+
+                    <div class="field">
+                        <app-phone-field fieldId="phone" label="Phone Number" [required]="true"
+                            formControlName="phoneNumber" [control]="phoneNumberControl" />
+                    </div>
+
+                    <div class="field">
+                        <app-form-field fieldId="password1" label="Password" type="password" [required]="true"
+                            floatVariant="on" formControlName="password" [control]="passwordControl" />
+                    </div>
+
+                    <div class="field">
+                        <app-form-field fieldId="confirmPassword1" label="Confirm Password" type="password"
+                            [required]="true" floatVariant="on" formControlName="confirmPassword"
+                            [control]="confirmPasswordControl" />
+                    </div>
+                </div>
+
+                <!-- reCAPTCHA Widget Simulation -->
+                <div
+                    class="my-1 flex items-center justify-between p-3 bg-[#f8f9fa] border border-gray-300 rounded-lg max-w-[260px] shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <p-checkbox formControlName="recaptcha" binary="true" inputId="robotCheck"></p-checkbox>
+                        <label for="robotCheck" class="text-sm font-medium text-gray-700 cursor-pointer select-none">I'm
+                            not a robot</label>
+                    </div>
+                    <div class="flex flex-col items-center justify-center pt-0.5">
+                        <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA"
+                            class="w-7 h-7 opacity-85" />
+                        <span
+                            class="text-[9px] text-gray-500 font-sans tracking-tight mt-0.5 select-none">reCAPTCHA</span>
+                    </div>
+                </div>
+
+                <p-button id="sign-up-btn" label="Sign Up" type="submit" [fluid]="true" size="large"
+                    styleClass="p-button-primary mt-2" />
+
+                <p class="form-card__register">
+                    Have an account?
+                    <a class="register-link font-bold" routerLink="/auth/login">Signin here</a>
+                </p>
+
+            </form>
+        </div>
+    </div>
+</div>

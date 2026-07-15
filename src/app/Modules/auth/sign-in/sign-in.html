@@ -1,0 +1,58 @@
+<div class="login-page">
+
+    <app-login-left-page />
+
+    <!-- ── Right: Form Panel ─────────────────────────────────────────── -->
+    <div class="login-page__form-panel">
+        <div class="form-card">
+
+            <div class="form-card__header">
+                <h2 class="form-card__title">Welcome To <span>ZAS ERP</span> 👋</h2>
+                <p class="form-card__subtitle">Sign in to your account to continue</p>
+            </div>
+
+            <form class="form-card__body" [formGroup]="form" (ngSubmit)="onSubmit()">
+
+                @if (error$ | async; as error) {
+                <p-message severity="error" [text]="error.message || 'Login failed. Please check your credentials.'"
+                    styleClass="w-full" />
+                }
+
+                <div class="field">
+                    <app-form-field fieldId="email1" label="Email or user account" type="email" [required]="true"
+                        floatVariant="on" formControlName="email" [control]="emailControl" [autofocus]="true" />
+                </div>
+
+                <div class="field">
+                    <app-form-field fieldId="password1" label="Password" type="password" [required]="true"
+                        floatVariant="on" formControlName="password" [control]="passwordControl" />
+                </div>
+
+                <div class="form-card__options">
+                    <div class="remember-me">
+                        <p-checkbox formControlName="rememberMe" binary="true" inputId="rememberMe"></p-checkbox>
+                        <label for="rememberMe">Remember me</label>
+                    </div>
+                    <a class="forgot-link">Forget Password?</a>
+                </div>
+
+                <p-button id="sign-in-btn" label="Sign In" type="submit" [fluid]="true" size="large"
+                    [loading]="(loading$ | async) ?? false" styleClass="p-button-primary" />
+
+                <div class="divider">
+                    <span>OR CONTINUE WITH</span>
+                </div>
+
+                <p-button label="Continue with Google" icon="pi pi-google"
+                    styleClass="p-button-outlined p-button-secondary google-btn" [fluid]="true" />
+
+                <p class="form-card__register">
+                    Don't have an account?
+                    <a class="register-link" routerLink="/auth/signup">Sign Up</a>
+                </p>
+
+            </form>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,155 @@
+<p-dialog
+    [visible]="visible"
+    (visibleChange)="onVisibleChange($event)"
+    [modal]="true"
+    [showHeader]="false"
+    [draggable]="false"
+    [dismissableMask]="false"
+    [style]="maximized()
+        ? { width: '100vw', height: '100vh', maxHeight: '100vh', borderRadius: '0' }
+        : { width: '72rem', maxWidth: '96vw' }"
+    styleClass="voucher-detail-modal"
+>
+    <!-- ── Header ─────────────────────────────────────────────────────────── -->
+    <div class="flex items-center justify-between px-5 py-3 border-b border-gray-200">
+        <div class="flex items-center gap-2">
+            <span class="w-1.5 h-5 rounded-sm bg-[var(--primary-color)]"></span>
+            <h5 style="margin: 0">Voucher Details</h5>
+        </div>
+        <div class="flex items-center gap-4 text-gray-400">
+            <button type="button" (click)="onCancel()" class="hover:text-gray-600 cursor-pointer" title="Close">
+                <i class="pi pi-times text-sm"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ── Body ───────────────────────────────────────────────────────────── -->
+    <div class="flex flex-col lg:flex-row">
+
+        <!-- Left: form -->
+        <form [formGroup]="form" class="flex-1 p-5 flex flex-col gap-7">
+
+            <!-- Section 1 -->
+            <div>
+                <div class="flex items-center gap-2 mb-5">
+                    <span class="w-5 h-5 rounded bg-[var(--primary-color)] text-white text-xs font-semibold flex items-center justify-center">1</span>
+                    <span class="text-sm font-semibold text-gray-700">Transaction Information</span>
+                    <div class="flex-1 h-px bg-gray-200 ml-2"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-5 gap-y-5">
+                    <app-select-field [filter]="true" fieldId="transactionType" label="Transaction Type" formControlName="transactionType" [options]="transactionTypes()" optionLabel="name" optionValue="id" [required]="true" [control]="f.transactionType" />
+                    <app-select-field fieldId="account" label="Account (Dr)" formControlName="account" [options]="accounts()" optionLabel="accountName" optionValue="id" [filter]="true" [required]="true" [control]="f.account" />
+                    <app-select-field fieldId="subLedgerType" label="Sub Ledger Type" formControlName="subLedgerType" [options]="subLedgerTypes()" optionLabel="name" optionValue="id" (onChange)="handleOnchnageOfsubLedgerType($event)" />
+                    <app-select-field fieldId="subLedger" label="Sub Ledger" formControlName="subLedger" [options]="subLedgers()" optionLabel="name" optionValue="id" />
+                    <app-select-field [filter]="true" fieldId="department" label="Department" formControlName="department" [options]="departments()" optionLabel="departmentName" optionValue="id" />
+                    <app-select-field [filter]="true" fieldId="costCenter" label="Cost Center" formControlName="costCenter" [options]="costCenters()" optionLabel="costCenterName" optionValue="id" />
+                    <app-select-field [filter]="true" fieldId="paymentMode" label="Payment Mode" formControlName="paymentMode" [options]="paymentModes()" optionLabel="name" optionValue="id" (onChange)="onPaymentModeChange($event)" />
+                    <p-floatlabel variant="on">
+                        <p-inputnumber inputId="exchangeRate" formControlName="exchangeRate" [minFractionDigits]="4" [maxFractionDigits]="4" styleClass="w-full" inputStyleClass="w-full" />
+                        <label for="exchangeRate">Exchange Rate</label>
+                    </p-floatlabel>
+                </div>
+            </div>
+
+            <!-- Section 2 -->
+            <div>
+                <div class="flex items-center gap-2 mb-5">
+                    <span class="w-5 h-5 rounded bg-[var(--primary-color)] text-white text-xs font-semibold flex items-center justify-center">2</span>
+                    <span class="text-sm font-semibold text-gray-700">Cheque / Instrument Information</span>
+                    <div class="flex-1 h-px bg-gray-200 ml-2"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-x-5 gap-y-5">
+                    <app-select-field fieldId="chequeType" label="Cheque Type" formControlName="chequeType" [options]="chequeTypes()" optionLabel="name" optionValue="id" [required]="isChequeBookMode" [control]="f.chequeType" />
+                    @if (isChequeBookMode) {
+                        <app-select-field [filter]="true" fieldId="chequeNo" label="Cheque No" formControlName="chequeNo" [options]="chequeLeaves()" optionLabel="chequeNumber" optionValue="chequeNumber" [required]="true" [control]="f.chequeNo" />
+                    } @else {
+                        <app-form-field fieldId="chequeNo" label="Cheque No" formControlName="chequeNo" [required]="isChequeNoRequired" [control]="f.chequeNo" />
+                    }
+                    <p-floatlabel variant="on">
+                        <p-datepicker inputId="chequeDate" formControlName="chequeDate" dateFormat="dd-M-yy" [showIcon]="true" appendTo="body" styleClass="w-full" />
+                        <label for="chequeDate">Cheque Date @if (isChequeDateRequired) { <span class="text-red-500">*</span> }</label>
+                    </p-floatlabel>
+                    <app-form-field fieldId="payeeTitle" label="Payee Title / Narration" formControlName="payeeTitle" />
+
+                    <p-floatlabel variant="on">
+                        <p-inputnumber inputId="amount" formControlName="amount" prefix="Rs " [minFractionDigits]="2" [maxFractionDigits]="2" styleClass="w-full" inputStyleClass="w-full" />
+                        <label for="amount">Amount (PKR) <span class="text-red-500">*</span></label>
+                    </p-floatlabel>
+
+                    <p-floatlabel variant="on">
+                        <p-inputnumber inputId="discount" formControlName="discount" prefix="Rs " [minFractionDigits]="2" [maxFractionDigits]="2" [min]="0" styleClass="w-full" inputStyleClass="w-full" />
+                        <label for="discount">Discount</label>
+                    </p-floatlabel>
+                </div>
+            </div>
+        </form>
+
+        <!-- Right: summary -->
+        <div class="w-full lg:w-80 lg:shrink-0 bg-gray-50 border-t lg:border-t-0 lg:border-l border-gray-200 p-5 flex flex-col gap-4">
+            <div class="flex items-center gap-2 text-gray-700">
+                <i class="pi pi-clock text-[var(--primary-color)]"></i>
+                <span class="text-sm font-semibold">Summary</span>
+            </div>
+
+            <div class="bg-white rounded-lg border border-gray-200 p-3">
+                <p class="text-xs text-gray-400">Gross Amount</p>
+                <p class="text-base font-bold text-gray-800">{{ grossAmount | number: '1.2-2' }}</p>
+                <p class="text-xs text-gray-400">PKR</p>
+            </div>
+
+            <div class="bg-white rounded-lg border border-gray-200 p-3">
+                <p class="text-xs text-gray-400">Tax</p>
+                <p class="text-base font-bold text-gray-800">{{ taxAmount | number: '1.2-2' }}</p>
+                <p class="text-xs text-gray-400">{{ taxRate }}% applied</p>
+            </div>
+
+            <div class="bg-white rounded-lg border border-gray-200 p-3">
+                <p class="text-xs text-gray-400">Discount</p>
+                <p class="text-base font-bold text-gray-800">{{ discountAmount | number: '1.2-2' }}</p>
+                <p class="text-xs text-gray-400">PKR</p>
+            </div>
+
+            <div class="bg-white rounded-lg border border-gray-200 p-3">
+                <p class="text-xs text-gray-400">Net Payable</p>
+                <p class="text-lg font-bold text-[var(--primary-color)]">{{ netPayable | number: '1.2-2' }}</p>
+                <p class="text-xs text-gray-400">PKR</p>
+            </div>
+
+            <div class="rounded-lg border p-3" [ngClass]="form.valid ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'">
+                <div class="flex items-center gap-2">
+                    <i class="pi" [ngClass]="form.valid ? 'pi-check-circle text-green-500' : 'pi-exclamation-circle text-amber-500'"></i>
+                    <span class="text-sm font-semibold" [ngClass]="form.valid ? 'text-green-700' : 'text-amber-700'">Validation Status</span>
+                </div>
+                <p class="text-xs mt-1" [ngClass]="form.valid ? 'text-green-600' : 'text-amber-600'">
+                    {{ form.valid ? 'All fields validated successfully' : 'Some required fields need attention' }}
+                </p>
+            </div>
+
+            <div class="rounded-lg border border-blue-100 bg-blue-50 p-3">
+                <div class="flex items-center gap-2 text-[var(--primary-color)]">
+                    <i class="pi pi-lightbulb"></i>
+                    <span class="text-sm font-semibold">Quick Tip</span>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Use Tab key to navigate between fields quickly. All amounts auto-calculate.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Footer ─────────────────────────────────────────────────────────── -->
+    <div class="flex items-center justify-end gap-2 px-5 py-3 border-t border-gray-200">
+        <button type="button" (click)="onCancel()" class="px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
+            Cancel
+        </button>
+        <button type="button" (click)="onSaveRow()" class="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
+            <i class="pi pi-save text-xs"></i> Save Row
+        </button>
+        <button type="button" (click)="onSaveAddNew()" class="flex items-center gap-2 px-4 py-2 rounded-lg border border-[var(--primary-color)] text-sm font-medium text-[var(--primary-color)] hover:bg-blue-50 transition-colors cursor-pointer">
+            <i class="pi pi-plus text-xs"></i> Save &amp; Add New
+        </button>
+        <button type="button" (click)="onSaveClose()" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--primary-color)] text-sm font-medium text-white hover:bg-[var(--primary-hover)] transition-colors cursor-pointer">
+            <i class="pi pi-check text-xs"></i> Save &amp; Close
+        </button>
+    </div>
+</p-dialog>
