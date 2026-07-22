@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { DataTableComponent, TableColumn, TableRowActionsDirective } from '@/app/shared';
 import { VoucherDetailModal } from '../voucher-detail-modal/voucher-detail-modal';
 
@@ -17,8 +17,10 @@ export interface VoucherDetailTotals {
 export class VoucherDetails implements OnChanges {
     /** Tax rate (sum of WHT %) sourced from the Tax Deductions table */
     @Input() taxRate = 0;
+
     /** Selected bank account id from the header — forwarded to the detail modal for the cheque book. */
     @Input() bankAccountId: number | null = null;
+
     voucherColumns: TableColumn[] = [
         { field: 'transactionType', header: 'Transaction Type', required: true },
         { field: 'account', header: 'Account (Dr)', required: true },
@@ -48,9 +50,14 @@ export class VoucherDetails implements OnChanges {
         }
     }
 
+    @ViewChild(VoucherDetailModal)
+    detailModal?: VoucherDetailModal;
+
     modalVisible = false;
+
     /** Index of the row currently being edited (null when adding a new row) */
     editingIndex: number | null = null;
+
     /** Snapshot of the row passed to the modal for editing */
     editingRow: any | null = null;
 
@@ -60,12 +67,13 @@ export class VoucherDetails implements OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['taxRate'] && this.voucherRows.length) {
             this.voucherRows = this.voucherRows.map((r) => this.applyTax({ ...r }));
+            this.emitTotals();
         }
     }
 
     /**
      * Apply the current WHT rate to a row using the gross-up model:
-     * the row `amount` is the NET (after WHT), Gross = Net / (1 − WHT%),
+     * the row amount is the NET (after WHT), Gross = Net / (1 − WHT%),
      * and the withheld tax = Gross − Net.
      */
     private applyTax(row: any): any {
@@ -73,9 +81,11 @@ export class VoucherDetails implements OnChanges {
         const discount = Number(row.discount) || 0;
         const rate = this.taxRate / 100;
         const gross = rate > 0 && rate < 1 ? net / (1 - rate) : net;
+
         row.taxPercent = this.taxRate;
-        row.taxAmount = gross - net;       // WHT withheld
-        row.netAmount = net + discount;    // net payable
+        row.taxAmount = gross - net;
+        row.netAmount = net + discount;
+
         return row;
     }
 
@@ -87,7 +97,7 @@ export class VoucherDetails implements OnChanges {
 
     onModalVisibleChange(visible: boolean): void {
         this.modalVisible = visible;
-        // Clear edit state when the modal closes (cancel or save & close)
+
         if (!visible) {
             this.editingIndex = null;
             this.editingRow = null;
@@ -96,23 +106,30 @@ export class VoucherDetails implements OnChanges {
 
     onModalSaved(row: any): void {
         const taxed = this.applyTax(row);
+
         if (this.editingIndex !== null) {
             const idx = this.editingIndex;
-            this.voucherRows = this.voucherRows.map((r, i) => (i === idx ? taxed : r));
+
+            this.voucherRows = this.voucherRows.map((r, i) =>
+                i === idx ? taxed : r
+            );
         } else {
             this.voucherRows = [...this.voucherRows, taxed];
         }
+
         this.emitTotals();
     }
 
     /** Duplicate the picked row — inserts the copy right after it */
     onDuplicateRow(event: { row: any; index: number }): void {
         const copy = this.applyTax({ ...event.row });
+
         this.voucherRows = [
             ...this.voucherRows.slice(0, event.index + 1),
             copy,
             ...this.voucherRows.slice(event.index + 1),
         ];
+
         this.emitTotals();
     }
 
@@ -127,15 +144,31 @@ export class VoucherDetails implements OnChanges {
         this.emitTotals();
     }
 
-    /** Clear every row — called by the parent form after a "Save & New". */
+    /** Clear every row — called by the parent form after a Save & New. */
     reset(): void {
         this.voucherRows = [];
         this.emitTotals();
     }
 
+    /** Reload all lookup data used inside the detail modal. */
+    refreshLookups(): void {
+        this.detailModal?.refreshLookups();
+    }
+
     private emitTotals(): void {
-        const gross = this.voucherRows.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
-        const discount = this.voucherRows.reduce((sum, r) => sum + (Number(r.discount) || 0), 0);
-        this.totalsChange.emit({ gross, discount });
+        const gross = this.voucherRows.reduce(
+            (sum, r) => sum + (Number(r.amount) || 0),
+            0
+        );
+
+        const discount = this.voucherRows.reduce(
+            (sum, r) => sum + (Number(r.discount) || 0),
+            0
+        );
+
+        this.totalsChange.emit({
+            gross,
+            discount,
+        });
     }
 }

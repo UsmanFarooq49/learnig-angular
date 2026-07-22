@@ -32,4 +32,15 @@ export class VoucherSummary {
     get fcyAmount(): number {
         return this.fcyTotal * this.exchangeRate;
     }
+
+    /**
+     * Refresh summary values.
+     * (Currently computed properties update automatically,
+     * but this keeps the component consistent with the other voucher components.)
+     */
+    refresh(): void {
+        // No action required.
+        // Angular automatically recalculates all getter values
+        // whenever @Input values change.
+    }
 }

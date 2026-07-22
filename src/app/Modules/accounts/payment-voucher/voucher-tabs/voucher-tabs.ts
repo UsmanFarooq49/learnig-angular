@@ -39,17 +39,21 @@ export class VoucherTabs {
 
     active = signal<TabKey>('attachments');
 
-    // ── Audit log state (lifted here so the tab badge can show the count) ──────
+    // ── Audit log state ──────────────────────────────────────────────────────
     auditEntries = signal<AuditEntry[]>([]);
     auditLoading = signal(false);
     auditError = signal<string | null>(null);
+
     private auditLoadedFor: number | null = null;
 
     constructor() {
-        // Fetch the audit trail once the voucher id is known (edit mode).
         effect(() => {
             const id = this.voucherId();
-            if (id == null || id === this.auditLoadedFor) return;
+
+            if (id == null || id === this.auditLoadedFor) {
+                return;
+            }
+
             this.auditLoadedFor = id;
             this.loadAudit(id);
         });
@@ -58,12 +62,14 @@ export class VoucherTabs {
     private loadAudit(id: number): void {
         this.auditLoading.set(true);
         this.auditError.set(null);
+
         this.auditService
             .getEntityAudit('voucher', id)
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
                 next: (res) => {
                     this.auditLoading.set(false);
+
                     if (res?.success) {
                         this.auditEntries.set(res.data ?? []);
                     } else {
@@ -72,7 +78,11 @@ export class VoucherTabs {
                 },
                 error: (err) => {
                     this.auditLoading.set(false);
-                    this.auditError.set(err?.error?.message || err?.message || 'Failed to load the audit log.');
+                    this.auditError.set(
+                        err?.error?.message ||
+                        err?.message ||
+                        'Failed to load the audit log.'
+                    );
                 },
             });
     }
@@ -81,14 +91,40 @@ export class VoucherTabs {
         {
             key: 'attachments',
             label: 'Attachments',
-            count: this.attachmentService.saved().length + this.attachmentService.pending().length,
+            count:
+                this.attachmentService.saved().length +
+                this.attachmentService.pending().length,
         },
-        { key: 'audit-log', label: 'Audit Log', count: this.auditEntries().length || undefined },
-        { key: 'approval-workflow', label: 'Approval Workflow' },
-        { key: 'linked-documents', label: 'Linked Documents', count: 0 },
+        {
+            key: 'audit-log',
+            label: 'Audit Log',
+            count: this.auditEntries().length || undefined,
+        },
+        {
+            key: 'approval-workflow',
+            label: 'Approval Workflow',
+        },
+        {
+            key: 'linked-documents',
+            label: 'Linked Documents',
+            count: 0,
+        },
     ]);
 
     setActive(key: TabKey): void {
         this.active.set(key);
+    }
+
+    /**
+     * Refresh tabs.
+     * Called by the parent form when the Refresh button is clicked.
+     */
+    refresh(): void {
+        const id = this.voucherId();
+
+        if (id != null) {
+            this.auditLoadedFor = null;
+            this.loadAudit(id);
+        }
     }
 }

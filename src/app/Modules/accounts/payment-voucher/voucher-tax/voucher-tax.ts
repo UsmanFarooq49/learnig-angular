@@ -9,7 +9,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 @Component({
     selector: 'app-voucher-tax',
     standalone: true,
-    imports: [CommonModule, FormsModule, SelectModule, DataTableComponent, TableCellDirective, TableRowActionsDirective],
+    imports: [
+        CommonModule,
+        FormsModule,
+        SelectModule,
+        DataTableComponent,
+        TableCellDirective,
+        TableRowActionsDirective,
+    ],
     templateUrl: './voucher-tax.html',
     styleUrl: './voucher-tax.scss',
 })
@@ -28,10 +35,17 @@ export class VoucherTax implements OnInit {
 
     /** Replace the rows wholesale — used by the parent form when loading a saved voucher for edit. */
     @Input() set initialTaxRows(rows: any[] | null) {
-        if (rows && rows.length) {
-            this.taxRows = rows;
-            this.emitTotal();
+        if (rows) {
+            this.taxRows = [...rows];
+        } else {
+            this.taxRows = [];
         }
+
+        if (this.taxRows.length === 0) {
+            this.onAddRow();
+        }
+
+        this.emitTotal();
     }
 
     /** Tax type lookup loaded from the API */
@@ -47,13 +61,12 @@ export class VoucherTax implements OnInit {
     private $destroyRef = inject(DestroyRef);
 
     ngOnInit(): void {
-        // Initialize with one empty row
         this.onAddRow();
         this.getTaxAccountsList();
         this.getTaxTypesList();
     }
 
-    getTaxAccountsList() {
+    getTaxAccountsList(): void {
         this.lookupService.getAccountDropdown().pipe(
             takeUntilDestroyed(this.$destroyRef),
         ).subscribe({
@@ -66,8 +79,8 @@ export class VoucherTax implements OnInit {
     taxAccountNameFor(row: any): string {
         return this.taxAccounts().find((a) => a.id === row.taxAccount)?.accountName ?? '';
     }
-    
-    getTaxTypesList() {
+
+    getTaxTypesList(): void {
         this.lookupService.getTaxTypes().pipe(
             takeUntilDestroyed(this.$destroyRef),
         ).subscribe({
@@ -91,7 +104,14 @@ export class VoucherTax implements OnInit {
     onAddRow(): void {
         this.taxRows = [
             ...this.taxRows,
-            { taxAccount: null, taxType: null, whtPercent: 0, baseAmount: 0, taxAmount: 0, editing: true },
+            {
+                taxAccount: null,
+                taxType: null,
+                whtPercent: 0,
+                baseAmount: 0,
+                taxAmount: 0,
+                editing: true,
+            },
         ];
     }
 
@@ -99,17 +119,22 @@ export class VoucherTax implements OnInit {
     recalc(row: any): void {
         const base = Number(row.baseAmount) || 0;
         const wht = Number(row.whtPercent) || 0;
+
         row.taxAmount = (base * wht) / 100;
+
         this.emitTotal();
     }
 
     saveRow(row: any): void {
-        if (row.taxAccount == null) return; // require an account before submitting
+        if (row.taxAccount == null) return;
+
         row.editing = false;
+        this.emitTotal();
     }
 
     editRow(row: any): void {
         row.editing = true;
+        this.taxRows = [...this.taxRows];
     }
 
     onRemoveRow(event: { row: any; index: number }): void {
@@ -124,9 +149,33 @@ export class VoucherTax implements OnInit {
         this.emitTotal();
     }
 
+    /** Refresh table after parent Refresh button */
+    refresh(): void {
+        this.taxRows = [...this.taxRows];
+        this.emitTotal();
+    }
+
+    /**
+     * Reload all lookup data used by the Voucher Tax component.
+     * Called by the parent Payment Voucher form when Refresh is clicked.
+     */
+    refreshLookups(): void {
+        this.getTaxAccountsList();
+        this.getTaxTypesList();
+        this.refresh();
+    }
+
     private emitTotal(): void {
-        const total = this.taxRows.reduce((sum, r) => sum + (Number(r.taxAmount) || 0), 0);
-        const rate = this.taxRows.reduce((sum, r) => sum + (Number(r.whtPercent) || 0), 0);
+        const total = this.taxRows.reduce(
+            (sum, r) => sum + (Number(r.taxAmount) || 0),
+            0
+        );
+
+        const rate = this.taxRows.reduce(
+            (sum, r) => sum + (Number(r.whtPercent) || 0),
+            0
+        );
+
         this.totalTaxChange.emit(total);
         this.taxRateChange.emit(rate);
     }

@@ -24,6 +24,26 @@
                 Cancel
             </button>
 
+            @if (!isEditMode()) {
+                <button
+                    type="button"
+                    (click)="onReset()"
+                    class="px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                >
+                    <i class="pi pi-refresh mr-2"></i>
+                    Reset
+                </button>
+
+                <button
+                    type="button"
+                    (click)="onRefresh()"
+                    class="px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                >
+                    <i class="pi pi-sync mr-2"></i>
+                    Refresh
+                </button>
+            }
+
             <button
                 type="button"
                 (click)="onSaveAndNew()"
@@ -34,44 +54,47 @@
             </button>
 
             @if (isEditMode()) {
-            <div class="relative">
-                <button
-                    type="button"
-                    (click)="togglePrintMenu($event)"
-                    class="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
-                >
-                    <i class="pi pi-print text-sm"></i>
-                    Print
-                    <i class="pi pi-chevron-down text-xs" [class.rotate-180]="printMenuOpen()"></i>
-                </button>
-
-                @if (printMenuOpen()) {
-                    <div
-                        class="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50"
-                        (click)="$event.stopPropagation()"
+                <div class="relative">
+                    <button
+                        type="button"
+                        (click)="togglePrintMenu($event)"
+                        class="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
                     >
-                        <button
-                            type="button"
-                            (click)="print('pdf')"
-                            class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                        <i class="pi pi-print text-sm"></i>
+                        Print
+                        <i class="pi pi-chevron-down text-xs" [class.rotate-180]="printMenuOpen()"></i>
+                    </button>
+
+                    @if (printMenuOpen()) {
+                        <div
+                            class="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50"
+                            (click)="$event.stopPropagation()"
                         >
-                            <i class="pi pi-file-pdf text-gray-400"></i>
-                            Download PDF
-                        </button>
-                        <button
-                            type="button"
-                            (click)="print('print')"
-                            class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
-                        >
-                            <i class="pi pi-print text-gray-400"></i>
-                            Print
-                        </button>
-                    </div>
-                }
-            </div>
+                            <button
+                                type="button"
+                                (click)="print('pdf')"
+                                class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                            >
+                                <i class="pi pi-file-pdf text-gray-400"></i>
+                                Download PDF
+                            </button>
+
+                            <button
+                                type="button"
+                                (click)="print('print')"
+                                class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                            >
+                                <i class="pi pi-print text-gray-400"></i>
+                                Print
+                            </button>
+                        </div>
+                    }
+                </div>
             }
         </div>
     </div>
+
+    <!-- Keep the rest of your file exactly as it is -->
 
     <!-- ── Form body ──────────────────────────────────────────────────────── -->
     <form [formGroup]="form" class="-mx-8 px-4 py-4">
@@ -223,3 +246,5 @@
         <app-voucher-tabs class="block mt-4" [voucherId]="currentVoucherId()" />
     </form>
 </div>
+
+

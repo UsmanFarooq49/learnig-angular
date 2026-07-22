@@ -364,27 +364,48 @@ export class VoucherDetailModal implements OnInit, OnChanges {
         return new Date(Number(m[3]), month, Number(m[1]));
     }
 
-    private patchFromRow(row: any): void {
-        this.form.patchValue({
-            transactionType: this.transactionTypes().find((t) => t.name === row.transactionType)?.id ?? null,
-            account: this.accounts().find((a) => a.accountName === row.account)?.id ?? null,
-            subLedgerType: this.subLedgerTypes().find((t) => t.name === row.subLedgerType)?.id ?? null,
-            subLedger: this.subLedgers().find((s) => s.name === row.subLedger)?.id ?? null,
-            department: this.departments().find((d) => d.departmentName === row.department)?.id ?? null,
-            costCenter: this.costCenters().find((c) => c.costCenterName === row.costCenter)?.id ?? null,
-            paymentMode: this.paymentModes().find((p) => p.name === row.paymentMode)?.id ?? null,
-            chequeType: this.chequeTypes().find((c) => c.name === row.chequeType)?.id ?? null,
-            chequeNo: row.chequeNo ?? '',
-            chequeDate: this.parseDate(row.chequeDate),
-            payeeTitle: row.payeeTitle ?? '',
-            amount: row.amount ?? 0,
-            discount: row.discount ?? 0,
-        });
+   private patchFromRow(row: any): void {
+    this.form.patchValue({
+        transactionType: row.transactionTypeId ?? null,
+        account: row.accountId ?? null,
+        subLedgerType: row.subLedgerTypeId ?? null,
+        subLedger: row.subLedgerId ?? null,
+        department: row.departmentId ?? null,
+        costCenter: row.costCenterId ?? null,
+        paymentMode: row.paymentModeId ?? null,
+        chequeType: row.chequeTypeId ?? null,
+        exchangeRate: row.exchangeRate ?? 1,
+        chequeNo: row.chequeNo ?? '',
+        chequeDate: this.parseDate(row.chequeDate),
+        payeeTitle: row.payeeTitle ?? '',
+        amount: row.amount ?? 0,
+        discount: row.discount ?? 0,
+    });
 
-        // Programmatic patch doesn't fire the select's (onChange) — apply cheque rules manually.
-        this.onPaymentModeChange(this.form.get('paymentMode')?.value ?? null);
+    if (row.subLedgerTypeId) {
+        this.handleOnchnageOfsubLedgerType(row.subLedgerTypeId);
     }
 
+    this.onPaymentModeChange(row.paymentModeId ?? null);
+}
+/**
+ * Reload all lookup data used by the voucher detail modal.
+ * Called when the parent Payment Voucher form Refresh button is clicked.
+ */
+refreshLookups(): void {
+    this.getTransactionTypes();
+    this.getSubLedgerTypes();
+    this.getAllDepartmentsList();
+    this.getCostCenters();
+    this.getChequeTypes();
+    this.getPaymentModes();
+    this.getAccounts();
+
+    // If cheque-book mode is active, reload available cheque leaves as well.
+    if (this.isChequeBookMode) {
+        this.loadChequeNumbers();
+    }
+}
     private buildRow() {
         const v = this.form.getRawValue();
         return {
