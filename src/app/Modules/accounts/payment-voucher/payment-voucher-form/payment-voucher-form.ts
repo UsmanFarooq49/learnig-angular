@@ -89,7 +89,7 @@ export class PaymentVoucherForm implements OnInit {
     /** Rows pushed down to the detail / tax tables when loading an existing voucher. */
     initialDetailRows = signal<VoucherDetailRow[] | null>(null);
     initialTaxRows = signal<VoucherTaxRow[] | null>(null);
-
+// work is done
     ngOnInit(): void {
         // AttachmentService is providedIn: 'root', so wipe any stale state from a prior
         // voucher form before this one mounts. loadVoucherForEdit will re-populate when editing.
