@@ -22,8 +22,11 @@
             <thead>
                 <tr class="bg-gray-50 border-b border-gray-200">
                     @if (showIndex) {
-                        <th class="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 w-12">#</th>
+                        <th class="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 w-12">
+                            #
+                        </th>
                     }
+
                     @for (col of columns; track col.field) {
                         <th
                             class="px-3 py-2.5 text-xs font-semibold text-gray-500"
@@ -31,11 +34,16 @@
                             [style.width]="col.width"
                         >
                             {{ col.header }}
-                            @if (col.required) { <span class="text-red-500">*</span> }
+                            @if (col.required) {
+                                <span class="text-red-500">*</span>
+                            }
                         </th>
                     }
+
                     @if (showActions) {
-                        <th class="px-3 py-2.5 text-center text-xs font-semibold text-gray-500 w-20">Action</th>
+                        <th class="action-column px-3 py-2.5 text-center text-xs font-semibold text-gray-500 w-28">
+                            Action
+                        </th>
                     }
                 </tr>
             </thead>
@@ -48,28 +56,42 @@
                         (click)="onRowClick(row, $index)"
                     >
                         @if (showIndex) {
-                            <td class="px-3 py-2.5 text-gray-500">{{ $index + 1 }}</td>
+                            <td class="px-3 py-2.5 text-gray-500">
+                                {{ $index + 1 }}
+                            </td>
                         }
+
                         @for (col of columns; track col.field) {
-                            <td class="px-3 py-2.5 text-gray-700" [ngClass]="alignClass(col)">
+                            <td
+                                class="px-3 py-2.5 text-gray-700"
+                                [ngClass]="alignClass(col)"
+                            >
                                 @if (cellTemplate(col.field); as tpl) {
                                     <ng-container
                                         [ngTemplateOutlet]="tpl"
-                                        [ngTemplateOutletContext]="{ $implicit: row, col: col, index: $index }"
+                                        [ngTemplateOutletContext]="{
+                                            $implicit: row,
+                                            col: col,
+                                            index: $index
+                                        }"
                                     ></ng-container>
                                 } @else if (isNumeric(col)) {
-                                    {{ row[col.field] | number: '1.2-2' }}
+                                    {{ row[col.field] | number:'1.2-2' }}
                                 } @else {
                                     {{ row[col.field] }}
                                 }
                             </td>
                         }
+
                         @if (showActions) {
-                            <td class="px-3 py-2.5">
+                            <td class="action-column px-3 py-2.5">
                                 @if (rowActionsTpl; as actionsTpl) {
                                     <ng-container
                                         [ngTemplateOutlet]="actionsTpl"
-                                        [ngTemplateOutletContext]="{ $implicit: row, index: $index }"
+                                        [ngTemplateOutletContext]="{
+                                            $implicit: row,
+                                            index: $index
+                                        }"
                                     ></ng-container>
                                 } @else {
                                     <div class="flex items-center justify-center gap-3">
@@ -81,6 +103,7 @@
                                         >
                                             <i class="pi pi-pencil text-sm"></i>
                                         </button>
+
                                         <button
                                             type="button"
                                             (click)="onRemove(row, $index)"
@@ -96,7 +119,10 @@
                     </tr>
                 } @empty {
                     <tr>
-                        <td [attr.colspan]="fullColspan" class="px-3 py-8 text-center text-gray-400">
+                        <td
+                            [attr.colspan]="fullColspan"
+                            class="px-3 py-8 text-center text-gray-400"
+                        >
                             {{ emptyMessage }}
                         </td>
                     </tr>
@@ -106,15 +132,27 @@
             @if (showTotals && data.length) {
                 <tfoot>
                     <tr class="bg-gray-50 border-t border-gray-200 font-semibold text-gray-700">
-                        <td [attr.colspan]="leadingSpan" class="px-3 py-2.5 text-left text-gray-500">
+                        <td
+                            [attr.colspan]="leadingSpan"
+                            class="px-3 py-2.5 text-left text-gray-500"
+                        >
                             Total Rows: {{ data.length }}
                         </td>
+
                         @for (col of trailingColumns; track col.field) {
-                            <td class="px-3 py-2.5" [ngClass]="alignClass(col)">
-                                @if (col.total) { {{ columnTotal(col.field) | number: '1.2-2' }} }
+                            <td
+                                class="px-3 py-2.5"
+                                [ngClass]="alignClass(col)"
+                            >
+                                @if (col.total) {
+                                    {{ columnTotal(col.field) | number:'1.2-2' }}
+                                }
                             </td>
                         }
-                        @if (showActions) { <td></td> }
+
+                        @if (showActions) {
+                            <td class="action-column"></td>
+                        }
                     </tr>
                 </tfoot>
             }

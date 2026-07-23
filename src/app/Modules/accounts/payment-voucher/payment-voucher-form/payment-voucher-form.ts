@@ -311,6 +311,7 @@ export class PaymentVoucherForm implements OnInit {
     summaryGross = 0;
     summaryDiscount = 0;
     summaryTotalTax = 0;
+    summaryNetPayable = 0;
 
     /** Effective tax rate for voucher detail lines = Σ(WHT %) from the tax table */
     detailTaxRate = 0;
@@ -327,9 +328,11 @@ export class PaymentVoucherForm implements OnInit {
     }
 
     onDetailsTotals(totals: VoucherDetailTotals): void {
-        this.summaryGross = totals.gross;
-        this.summaryDiscount = totals.discount;
-    }
+    this.summaryGross = totals.gross;
+    this.summaryDiscount = totals.discount;
+    this.summaryTotalTax = totals.totalTax;
+    this.summaryNetPayable = totals.net;
+}
 
     onTaxTotal(total: number): void {
         this.summaryTotalTax = total;
@@ -442,6 +445,7 @@ onRefresh(): void {
         this.summaryDiscount = 0;
         this.summaryTotalTax = 0;
         this.detailTaxRate = 0;
+        this.summaryNetPayable = 0;
 
         // Attachments were already committed; clear the local display + queues.
         this.attachmentService.loadSaved([]);

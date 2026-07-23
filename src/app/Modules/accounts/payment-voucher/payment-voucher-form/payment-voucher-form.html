@@ -233,13 +233,14 @@
                 (taxRateChange)="onTaxRate($event)"
             />
             <app-voucher-summary
-                class="block w-full xl:w-80 xl:shrink-0"
-                [grossAmount]="summaryGross"
-                [discount]="summaryDiscount"
-                [totalTax]="summaryTotalTax"
-                [valid]="summaryValid"
-                [validationMessage]="summaryValidationMessage"
-            />
+    class="block w-full xl:w-80 xl:shrink-0"
+    [grossAmount]="summaryGross"
+    [discount]="summaryDiscount"
+    [totalTax]="summaryTotalTax"
+    [netPayable]="summaryNetPayable"
+    [valid]="summaryValid"
+    [validationMessage]="summaryValidationMessage"
+/>
         </div>
 
         <!-- ── Voucher tabs (Attachments / Audit Log / Approval / Linked) ──── -->

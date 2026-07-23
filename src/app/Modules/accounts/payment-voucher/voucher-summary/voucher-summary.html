@@ -6,52 +6,110 @@
     </div>
 
     <div class="flex flex-col gap-3 text-sm">
+
+        <!-- Gross Amount -->
         <div class="flex items-center justify-between">
             <span class="text-gray-500">Gross Amount</span>
-            <span class="font-semibold text-gray-800">Rs{{ grossAmount | number: '1.2-2' }}</span>
+            <span class="font-semibold text-gray-800">
+                Rs{{ grossAmount | number:'1.2-2' }}
+            </span>
         </div>
+
+        <!-- Discount -->
         <div class="flex items-center justify-between">
             <span class="text-gray-500">Discount</span>
-            <span class="font-medium text-gray-600">(-) Rs{{ discount | number: '1.2-2' }}</span>
+            <span class="font-medium text-gray-600">
+                (-) Rs{{ discount | number:'1.2-2' }}
+            </span>
         </div>
+
+        <!-- Tax -->
+        <div class="flex items-center justify-between">
+            <span class="text-gray-500">Tax Amount</span>
+            <span class="font-medium text-gray-700">
+                Rs{{ totalTax | number:'1.2-2' }}
+            </span>
+        </div>
+
+        <!-- Taxable -->
         <div class="flex items-center justify-between">
             <span class="text-gray-500">Taxable Amount</span>
-            <span class="font-semibold text-gray-800">Rs{{ taxableAmount | number: '1.2-2' }}</span>
+            <span class="font-semibold text-gray-800">
+                Rs{{ taxableAmount | number:'1.2-2' }}
+            </span>
         </div>
+
+        <!-- Other Charges -->
         <div class="flex items-center justify-between">
             <span class="text-gray-500">Other Charges</span>
-            <span class="font-medium text-gray-600">Rs{{ otherCharges | number: '1.2-2' }}</span>
+            <span class="font-medium text-gray-600">
+                Rs{{ otherCharges | number:'1.2-2' }}
+            </span>
         </div>
 
         <div class="border-t border-gray-100 my-1"></div>
 
+        <!-- Net Payable -->
         <div class="flex items-center justify-between">
-            <span class="font-semibold text-[var(--primary-color)]">Net Payable (PKR)</span>
-            <span class="font-bold text-[var(--primary-color)]">Rs{{ netPayable | number: '1.2-2' }}</span>
+            <span class="font-semibold text-[var(--primary-color)]">
+                Net Payable (PKR)
+            </span>
+
+            <span class="font-bold text-[var(--primary-color)]">
+                Rs{{ netPayable | number:'1.2-2' }}
+            </span>
         </div>
 
         <div class="border-t border-gray-100 my-1"></div>
 
+        <!-- FCY -->
         <div class="flex items-center justify-between">
             <span class="text-gray-500">FCY Total (USD)</span>
-            <span class="font-medium text-gray-700">{{ fcyTotal | number: '1.2-2' }}</span>
+            <span class="font-medium text-gray-700">
+                {{ fcyTotal | number:'1.2-2' }}
+            </span>
         </div>
+
         <div class="flex items-center justify-between">
             <span class="text-gray-500">Exchange Rate</span>
-            <span class="font-medium text-gray-700">{{ exchangeRate | number: '1.2-2' }}</span>
+            <span class="font-medium text-gray-700">
+                {{ exchangeRate | number:'1.2-2' }}
+            </span>
         </div>
+
         <div class="flex items-center justify-between">
             <span class="text-gray-500">FCY Amount (PKR)</span>
-            <span class="font-medium text-gray-700">Rs{{ fcyAmount | number: '1.2-2' }}</span>
+            <span class="font-medium text-gray-700">
+                Rs{{ fcyAmount | number:'1.2-2' }}
+            </span>
         </div>
+
     </div>
 
     <!-- Validation -->
-    <div class="mt-5 rounded-lg border p-3" [ngClass]="valid ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'">
+    <div
+        class="mt-5 rounded-lg border p-3"
+        [ngClass]="valid ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'"
+    >
         <div class="flex items-center gap-2">
-            <i class="pi" [ngClass]="valid ? 'pi-check-circle text-green-500' : 'pi-exclamation-circle text-amber-500'"></i>
-            <span class="text-sm font-semibold" [ngClass]="valid ? 'text-green-700' : 'text-amber-700'">Validation</span>
+            <i
+                class="pi"
+                [ngClass]="valid ? 'pi-check-circle text-green-500' : 'pi-exclamation-circle text-amber-500'"
+            ></i>
+
+            <span
+                class="text-sm font-semibold"
+                [ngClass]="valid ? 'text-green-700' : 'text-amber-700'"
+            >
+                Validation
+            </span>
         </div>
-        <p class="text-xs mt-1" [ngClass]="valid ? 'text-green-600' : 'text-amber-600'">{{ validationMessage }}</p>
+
+        <p
+            class="text-xs mt-1"
+            [ngClass]="valid ? 'text-green-600' : 'text-amber-600'"
+        >
+            {{ validationMessage }}
+        </p>
     </div>
 </div>

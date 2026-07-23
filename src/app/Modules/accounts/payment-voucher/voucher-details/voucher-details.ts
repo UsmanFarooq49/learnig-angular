@@ -5,6 +5,8 @@ import { VoucherDetailModal } from '../voucher-detail-modal/voucher-detail-modal
 export interface VoucherDetailTotals {
     gross: number;
     discount: number;
+    totalTax: number;
+    net: number;
 }
 
 @Component({
@@ -61,7 +63,7 @@ export class VoucherDetails implements OnChanges {
     /** Snapshot of the row passed to the modal for editing */
     editingRow: any | null = null;
 
-    /** Emits the gross + discount totals whenever the rows change */
+    /** Emits voucher totals whenever the rows change */
     @Output() totalsChange = new EventEmitter<VoucherDetailTotals>();
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -72,19 +74,30 @@ export class VoucherDetails implements OnChanges {
     }
 
     /**
-     * Apply the current WHT rate to a row using the gross-up model:
-     * the row amount is the NET (after WHT), Gross = Net / (1 − WHT%),
-     * and the withheld tax = Gross − Net.
+     * Item 5 Fix:
+     * Carry full precision through the calculation.
+     * Do NOT round here.
+     * Rounding happens only in the UI using Angular number pipe.
      */
     private applyTax(row: any): any {
-        const net = Number(row.amount) || 0;
+
+        const amount = Number(row.amount) || 0;
         const discount = Number(row.discount) || 0;
+
         const rate = this.taxRate / 100;
-        const gross = rate > 0 && rate < 1 ? net / (1 - rate) : net;
+
+        const gross =
+            rate > 0 && rate < 1
+                ? amount / (1 - rate)
+                : amount;
+
+        const tax = gross - amount;
 
         row.taxPercent = this.taxRate;
-        row.taxAmount = gross - net;
-        row.netAmount = net + discount;
+        row.taxAmount = tax;
+
+        // Gross + Discount
+        row.netAmount = gross + discount;
 
         return row;
     }
@@ -120,7 +133,52 @@ export class VoucherDetails implements OnChanges {
         this.emitTotals();
     }
 
-    /** Duplicate the picked row — inserts the copy right after it */
+        /** Recalculate gross/discount/tax/net totals and emit them to the parent form. */
+    private emitTotals(): void {
+        const gross = this.voucherRows.reduce(
+            (sum, r) => sum + (Number(r.amount) || 0),
+            0
+        );
+
+        const discount = this.voucherRows.reduce(
+            (sum, r) => sum + (Number(r.discount) || 0),
+            0
+        );
+
+        const totalTax = this.voucherRows.reduce(
+            (sum, r) => sum + (Number(r.taxAmount) || 0),
+            0
+        );
+
+        const net = this.voucherRows.reduce(
+            (sum, r) => sum + (Number(r.netAmount) || 0),
+            0
+        );
+
+        this.totalsChange.emit({
+            gross,
+            discount,
+            totalTax,
+            net,
+        } as any);
+    }
+
+    /** Total Tax Amount */
+    get totalTax(): number {
+        return this.voucherRows.reduce(
+            (sum, r) => sum + (Number(r.taxAmount) || 0),
+            0
+        );
+    }
+
+    /** Net Amount */
+    get netAmount(): number {
+        return this.voucherRows.reduce(
+            (sum, r) => sum + (Number(r.netAmount) || 0),
+            0
+        );
+    }
+        /** Duplicate the picked row */
     onDuplicateRow(event: { row: any; index: number }): void {
         const copy = this.applyTax({ ...event.row });
 
@@ -144,31 +202,14 @@ export class VoucherDetails implements OnChanges {
         this.emitTotals();
     }
 
-    /** Clear every row — called by the parent form after a Save & New. */
+    /** Clear all voucher detail rows */
     reset(): void {
         this.voucherRows = [];
         this.emitTotals();
     }
 
-    /** Reload all lookup data used inside the detail modal. */
+    /** Reload all lookup data used inside the detail modal */
     refreshLookups(): void {
         this.detailModal?.refreshLookups();
-    }
-
-    private emitTotals(): void {
-        const gross = this.voucherRows.reduce(
-            (sum, r) => sum + (Number(r.amount) || 0),
-            0
-        );
-
-        const discount = this.voucherRows.reduce(
-            (sum, r) => sum + (Number(r.discount) || 0),
-            0
-        );
-
-        this.totalsChange.emit({
-            gross,
-            discount,
-        });
     }
 }

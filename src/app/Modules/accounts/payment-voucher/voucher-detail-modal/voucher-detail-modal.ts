@@ -180,7 +180,10 @@ export class VoucherDetailModal implements OnInit, OnChanges {
         this.lookupService.getPaymentModes().pipe(
             takeUntilDestroyed(this.$destroyRef),
         ).subscribe({
-            next: (response) => this.paymentModes.set(response.data),
+            next: (response) => {
+              this.paymentModes.set(response.data);
+                   this.applyDefaultValues();
+},
             error: (err) => console.error('Error fetching payment modes:', err),
         });
     }
@@ -208,7 +211,9 @@ export class VoucherDetailModal implements OnInit, OnChanges {
             takeUntilDestroyed(this.$destroyRef),
         ).subscribe({
             next: (response) => {
+                console.log(response.data);
                 this.transactionTypes.set(response.data);
+                this.applyDefaultValues();
             },
             error: (err) => {
                 console.error('Error fetching transaction types:', err);
@@ -318,22 +323,46 @@ export class VoucherDetailModal implements OnInit, OnChanges {
     /** Reset every field to its initial blank state. */
     private resetForm(): void {
         this.form.reset({
-            transactionType: null,
-            account: null,
-            subLedgerType: null,
-            subLedger: null,
-            department: null,
-            costCenter: null,
-            paymentMode: null,
-            exchangeRate: 1.0,
-            chequeType: null,
-            chequeNo: '',
-            chequeDate: null,
-            payeeTitle: '',
-            amount: 0,
-            discount: 0,
-        });
+    transactionType: null,
+    account: null,
+    subLedgerType: null,
+    subLedger: null,
+    department: null,
+    costCenter: null,
+    paymentMode: null,
+    exchangeRate: 1.0,
+    chequeType: null,
+    chequeNo: '',
+    chequeDate: null,
+    payeeTitle: '',
+    amount: 0,
+    discount: 0,
+});
+
+this.applyDefaultValues();
     }
+
+    private applyDefaultValues(): void {
+    if (this.editRow) return;
+    console.log(this.transactionTypes());
+
+   const transactionTypeId =
+    this.transactionTypes().find(
+        t => t.name?.trim() === 'InvoicePayment'
+    )?.id ?? null;
+
+    const paymentModeId =
+        this.paymentModes().find(
+            p => p.name?.toLowerCase() === 'cheque'
+        )?.id ?? null;
+
+    this.form.patchValue({
+        transactionType: transactionTypeId,
+        paymentMode: paymentModeId,
+    });
+
+    this.onPaymentModeChange(paymentModeId);
+}
 
     onSaveClose(): void {
         if (this.emitRow()) this.close();

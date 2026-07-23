@@ -9,38 +9,50 @@ import { CommonModule } from '@angular/common';
     styleUrl: './voucher-summary.scss',
 })
 export class VoucherSummary {
-    @Input() grossAmount = 0;
-    @Input() discount = 0;
-    @Input() totalTax = 0;
-    @Input() otherCharges = 0;
-    @Input() fcyTotal = 0;
-    @Input() exchangeRate = 1;
-    @Input() valid = true;
-    @Input() validationMessage = 'No validation errors.';
 
-    /** Gross minus discount */
+    @Input() grossAmount = 0;
+
+    @Input() discount = 0;
+
+    @Input() totalTax = 0;
+
+    @Input() valid = false;
+
+    @Input() validationMessage = '';
+
+    /** Future use */
+    @Input() otherCharges = 0;
+
+    /** Future use */
+    @Input() exchangeRate = 1;
+
+    /** Future use */
+    @Input() fcyTotal = 0;
+
+    /**
+     * Taxable Amount
+     */
     get taxableAmount(): number {
         return this.grossAmount - this.discount;
     }
 
-    /** Taxable amount, less withholding tax, plus any other charges */
+    /**
+     * Net Payable
+     * Gross - Discount + Tax + Other Charges
+     */
     get netPayable(): number {
-        return this.taxableAmount - this.totalTax + this.otherCharges;
-    }
-
-    /** Foreign-currency total converted to local currency */
-    get fcyAmount(): number {
-        return this.fcyTotal * this.exchangeRate;
+        return (
+            this.grossAmount -
+            this.discount +
+            this.totalTax +
+            this.otherCharges
+        );
     }
 
     /**
-     * Refresh summary values.
-     * (Currently computed properties update automatically,
-     * but this keeps the component consistent with the other voucher components.)
+     * FCY Amount
      */
-    refresh(): void {
-        // No action required.
-        // Angular automatically recalculates all getter values
-        // whenever @Input values change.
+    get fcyAmount(): number {
+        return this.fcyTotal * this.exchangeRate;
     }
 }
