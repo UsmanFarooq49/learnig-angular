@@ -39,7 +39,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-x-5 gap-y-5">
                     <app-select-field [filter]="true" fieldId="transactionType" label="Transaction Type" formControlName="transactionType" [options]="transactionTypes()" optionLabel="name" optionValue="id" [required]="true" [control]="f.transactionType" />
-                    <app-select-field fieldId="account" label="Account (Dr)" formControlName="account" [options]="accounts()" optionLabel="accountName" optionValue="id" [filter]="true" [required]="true" [control]="f.account" />
+                    <app-select-field fieldId="account" label="Account (Dr)" formControlName="account" [options]="accounts()" optionLabel="accountName" optionValue="id" [filter]="true" [required]="true" [control]="f.account" (onChange)="onAccountChange($event)" />
                     <app-select-field fieldId="subLedgerType" label="Sub Ledger Type" formControlName="subLedgerType" [options]="subLedgerTypes()" optionLabel="name" optionValue="id" (onChange)="handleOnchnageOfsubLedgerType($event)" />
                     <app-select-field fieldId="subLedger" label="Sub Ledger" formControlName="subLedger" [options]="subLedgers()" optionLabel="name" optionValue="id" />
                     <app-select-field [filter]="true" fieldId="department" label="Department" formControlName="department" [options]="departments()" optionLabel="departmentName" optionValue="id" />

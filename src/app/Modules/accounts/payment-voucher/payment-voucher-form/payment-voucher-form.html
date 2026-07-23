@@ -232,12 +232,11 @@
                 (totalTaxChange)="onTaxTotal($event)"
                 (taxRateChange)="onTaxRate($event)"
             />
-            <app-voucher-summary
+           <app-voucher-summary
     class="block w-full xl:w-80 xl:shrink-0"
     [grossAmount]="summaryGross"
     [discount]="summaryDiscount"
     [totalTax]="summaryTotalTax"
-    [netPayable]="summaryNetPayable"
     [valid]="summaryValid"
     [validationMessage]="summaryValidationMessage"
 />

@@ -61,9 +61,18 @@ export class LookupService {
             this.http.get<LookupTypeResponse>(`${environment.apiUrl}/lookup/sub-ledger-types`));
     }
 
-    getSubLedgers(ledgerTypeId: number): Observable<LookupTypeResponse> {
-        return this.cached(`sub-ledgers:${ledgerTypeId}`, () => {
-            const params = new HttpParams().set('subLedgerTypeId', ledgerTypeId.toString());
+    /**
+     * Sub ledgers for a given Sub Ledger Type, optionally further filtered by
+     * the Debit Account (`accountId`) so the dropdown only shows sub ledgers
+     * that belong to that account.
+     */
+    getSubLedgers(ledgerTypeId: number, accountId?: number | null): Observable<LookupTypeResponse> {
+        const key = `sub-ledgers:${ledgerTypeId}:${accountId ?? 0}`;
+        return this.cached(key, () => {
+            let params = new HttpParams().set('subLedgerTypeId', ledgerTypeId.toString());
+            if (accountId != null && accountId !== 0) {
+                params = params.set('accountId', accountId.toString());
+            }
             return this.http.get<LookupTypeResponse>(`${environment.apiUrl}/lookup/sub-ledgers`, { params });
         });
     }

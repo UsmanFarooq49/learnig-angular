@@ -171,7 +171,14 @@ export class VoucherDetailModal implements OnInit, OnChanges {
         this.lookupService.getAccountDropdown(0, 0, 2).pipe(
             takeUntilDestroyed(this.$destroyRef),
         ).subscribe({
-            next: (response) => this.accounts.set(response.data),
+            next: (response) => {
+                this.accounts.set(response.data);
+                // Item 3 Fix: if we're editing a row, (re)apply the Control Account lock
+                // now that the accounts list has arrived (it may load after editRow is patched).
+                if (this.editRow) {
+                    this.applyControlAccountLock(this.form.get('account')?.value ?? null);
+                }
+            },
             error: (err) => console.error('Error fetching accounts:', err),
         });
     }
@@ -234,19 +241,55 @@ export class VoucherDetailModal implements OnInit, OnChanges {
         });
     }
 
-    /** Fires when the Sub Ledger Type select changes — fetches the dependent Sub Ledgers. */
+    /**
+     * Item 4 Fix:
+     * Fires when the Sub Ledger Type select changes — fetches the dependent Sub Ledgers.
+     * Filters by the selected Debit Account (if any) AND the Sub Ledger Type; when no
+     * Debit Account is selected, falls back to filtering by Sub Ledger Type only.
+     */
     handleOnchnageOfsubLedgerType(value: any): void {
         // Reset only the Sub Ledger (departments load independently on init).
         this.form.patchValue({ subLedger: null });
         this.subLedgers.set([]);
         if (value == null) return;
 
-        this.lookupService.getSubLedgers(value).pipe(
+        const accountId = this.form.get('account')?.value ?? null;
+
+        this.lookupService.getSubLedgers(value, accountId).pipe(
             takeUntilDestroyed(this.$destroyRef),
         ).subscribe({
             next: (response) => this.subLedgers.set(response.data),
             error: (err) => console.error('Error fetching sub ledgers:', err),
         });
+    }
+
+    /**
+     * Item 3 Fix:
+     * Fires when the "Account (Dr)" select changes. When the selected account is a
+     * Control Account, auto-selects and locks the Sub Ledger Type mapped to it
+     * (Customer / Vendor / Employee, etc.) so the user cannot override it manually.
+     * For any other account, the Sub Ledger Type field is (re)enabled for manual entry.
+     * Either way, the Sub Ledger dropdown is re-filtered for the new Debit Account (Item 4).
+     */
+    onAccountChange(accountId: number | null): void {
+        this.applyControlAccountLock(accountId);
+        this.handleOnchnageOfsubLedgerType(this.form.get('subLedgerType')?.value ?? null);
+    }
+
+    /** Locks/unlocks the Sub Ledger Type control based on whether `accountId` is a Control Account. */
+    private applyControlAccountLock(accountId: number | null): void {
+        const subLedgerTypeCtrl = this.form.get('subLedgerType');
+        const account = accountId != null ? this.accounts().find((a) => a.id === accountId) : undefined;
+
+        if (account?.isControlAccount) {
+            // Force the mapped Sub Ledger Type and prevent manual override.
+            subLedgerTypeCtrl?.setValue(account.controlType, { emitEvent: false });
+            subLedgerTypeCtrl?.disable({ emitEvent: false });
+        } else if (subLedgerTypeCtrl?.disabled) {
+            // Only reset when unlocking a field that was previously auto-set/locked.
+            subLedgerTypeCtrl.enable({ emitEvent: false });
+            subLedgerTypeCtrl.setValue(null, { emitEvent: false });
+        }
     }
 
     form = this.fb.group({
@@ -322,6 +365,9 @@ export class VoucherDetailModal implements OnInit, OnChanges {
 
     /** Reset every field to its initial blank state. */
     private resetForm(): void {
+        // Item 3 Fix: clear any lock left over from a previously-edited Control Account row.
+        this.form.get('subLedgerType')?.enable({ emitEvent: false });
+
         this.form.reset({
     transactionType: null,
     account: null,
@@ -410,6 +456,9 @@ this.applyDefaultValues();
         amount: row.amount ?? 0,
         discount: row.discount ?? 0,
     });
+
+    // Item 3 Fix: lock the Sub Ledger Type if the saved Debit Account is a Control Account.
+    this.applyControlAccountLock(row.accountId ?? null);
 
     if (row.subLedgerTypeId) {
         this.handleOnchnageOfsubLedgerType(row.subLedgerTypeId);
